@@ -10,7 +10,7 @@ def seed_products():
     
     image1_product1 = ProductImage(
         product_id=1,
-        image_url='https://miamikevbucket.s3.amazonaws.com/babykev700.png'
+        image_url='https://miamikevbucket.s3.amazonaws.com/stickersheet5.png'
     )
 
     product2 = Product(
@@ -21,7 +21,7 @@ def seed_products():
     
     image1_product2 = ProductImage(
         product_id=2,
-        image_url='https://miamikevbucket.s3.amazonaws.com/babykev700.png'
+        image_url='https://miamikevbucket.s3.amazonaws.com/stickerbatch3.png'
     )
     image2_product2 = ProductImage(
         product_id=2,

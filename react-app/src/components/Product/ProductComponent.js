@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { updateProduct } from '../../store/product';
 import './Product.css'
@@ -7,10 +8,12 @@ function ProductComponent() {
     const [product, setProduct] = useState(null);
     const [isEditing, setIsEditing] = useState({ name: false, description: false, price: false });
     const [editableProduct, setEditableProduct] = useState({ name: '', description: '', price: 0 });
+
     const dispatch = useDispatch();
+    const { id } = useParams();
 
     useEffect(() => {
-        fetch('/api/products/2')
+        fetch(`/api/products/${id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -22,7 +25,7 @@ function ProductComponent() {
                 setEditableProduct({ name: data.name, description: data.description, price: data.price });
             })
             .catch(error => console.error('Error:', error));
-    }, []);
+    }, [id]);
 
     const handleEdit = (field) => {
         setIsEditing({ ...isEditing, [field]: true });
@@ -34,11 +37,11 @@ function ProductComponent() {
 
     const handleSave = async (field) => {
         setIsEditing({ ...isEditing, [field]: false });
-    
+
         if (editableProduct[field] !== product[field]) {
             const updatedProduct = { ...product, [field]: editableProduct[field] };
             setProduct(updatedProduct);
-    
+
             const resultAction = await dispatch(updateProduct(updatedProduct));
             if (updateProduct.fulfilled.match(resultAction)) {
                 console.log("Updated successfully");
@@ -47,7 +50,6 @@ function ProductComponent() {
             }
         }
     }
-    
 
     const handleKeyDown = (e, field) => {
         if (e.key === 'Enter') {
