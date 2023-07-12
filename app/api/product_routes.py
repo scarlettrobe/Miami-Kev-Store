@@ -1,9 +1,8 @@
 from flask import Blueprint, jsonify, request
 from flask_login import login_required
 from app.models import Product
-from app.forms import ProductForm
+from app.forms.ProductForm import ProductForm
 from app.api.aws import upload_file_to_s3, get_unique_filename, remove_file_from_s3
-
 product_routes = Blueprint('products', __name__)
 
 @product_routes.route('/', methods=['GET', 'POST'])
@@ -11,7 +10,7 @@ def products():
     if request.method == 'GET':
         products = Product.query.all()
         return {'products': [product.to_dict() for product in products]}
-    if request.method == 'POST':
+    elif request.method == 'POST':
         form = ProductForm()
         form['csrf_token'].data = request.cookies['csrf_token']
         if form.validate_on_submit():
@@ -19,22 +18,24 @@ def products():
                 name=form.data['name'],
                 description=form.data['description'],
                 price=form.data['price'],
-                # image_url will be added after image is uploaded to S3
             )
             db.session.add(product)
             db.session.commit()
 
-            if "image" in request.files:
-                image = request.files["image"]
-                if image.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
-                    image.filename = get_unique_filename(image.filename)
-                    response = upload_file_to_s3(image)
-                    if "errors" not in response:
-                        product.image_url = response['url']
-                        db.session.commit()
+            if "images" in request.files:
+                for image_file in request.files.getlist("images"):
+                    if image_file.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+                        image_file.filename = get_unique_filename(image_file.filename)
+                        response = upload_file_to_s3(image_file)
+                        if "errors" not in response:
+                            image = ProductImage(
+                                product_id=product.id,
+                                image_url=response['url'],
+                            )
+                            db.session.add(image)
+                db.session.commit()
             return product.to_dict()
         return {'errors': validation_errors_to_error_messages(form.errors)}, 400
-
 
 @product_routes.route('/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 def product(id):
@@ -44,32 +45,29 @@ def product(id):
     if request.method == 'GET':
         return product.to_dict()
     elif request.method == 'PUT':
-        form = ProductForm()
+        form = ProductForm(data=request.get_json())
         form['csrf_token'].data = request.cookies['csrf_token']
         if form.validate_on_submit():
             product.name = form.data['name']
             product.description = form.data['description']
             product.price = form.data['price']
-            if "image" in request.files:
-                image = request.files["image"]
-                if image.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
-                    if product.image_url:
-                        remove_file_from_s3(product.image_url)
-                    image.filename = get_unique_filename(image.filename)
-                    response = upload_file_to_s3(image)
-                    if "errors" not in response:
-                        product.image_url = response['url']
-            db.session.commit()
-            return product.to_dict()
-        return {'errors': validation_errors_to_error_messages(form.errors)}, 400
-    elif request.method == 'DELETE':
-        if product.image_url:
-            remove_file_from_s3(product.image_url)
-        db.session.delete(product)
-        db.session.commit()
-        return {"message": "Product deleted"}
 
+            if "images" in request.files:
+                # Delete all existing images for this product
+                for image in product.images:
+                    remove_file_from_s3(image.image_url)
+                    db.session.delete(image)
 
+                # Add new images
+                for image_file in request.files.getlist("images"):
+                    if image_file.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+                        image_file.filename = get_unique_filename(image_file.filename)
+                        response = upload_file_to_s3(image_file)
+                        if "errors" not in response:
+                            image = ProductImage(
+                                product_id=product.id,
+                                image_url=response['url'],
+                            )
 
 
 # @product_routes.route('/', methods=['POST'])
