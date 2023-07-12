@@ -2,13 +2,18 @@
 from flask import Blueprint, jsonify, request
 from flask_login import login_required
 from app.models import Product
+from app.models import User, db
 from app.forms.ProductForm import ProductForm
 from app.api.aws import upload_file_to_s3, get_unique_filename, remove_file_from_s3
+
 product_routes = Blueprint('products', __name__)
+
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 @product_routes.route('/', methods=['GET'])
 def get_products():
-    products = Product.query.all()
+    products = Product.query.all()/home/scarlettrobe/aa-projects/MiamiKev/app/seeds
     return {'products': [product.to_dict() for product in products]}
 
 
@@ -54,7 +59,8 @@ def update_product(id):
     product = Product.query.get(id)
     if not product:
         return {"errors": ["Product not found"]}, 404
-    form = ProductForm(data=request.get_json())
+    form = form = ProductForm()
+    form['csrf_token'].data = request.cookies['csrf_token']
     form['csrf_token'].data = request.cookies['csrf_token']
     if form.validate_on_submit():
         product.name = form.data['name']
