@@ -1,10 +1,12 @@
 
 from flask import Blueprint, jsonify, request
 from flask_login import login_required
-from app.models import Product
+from app.models import Product, ProductImage
 from app.models import User, db
 from app.forms.ProductForm import ProductForm
 from app.api.aws import upload_file_to_s3, get_unique_filename, remove_file_from_s3
+
+
 
 product_routes = Blueprint('products', __name__)
 
@@ -54,13 +56,13 @@ def get_product(id):
     return product.to_dict()
 
 
+
 @product_routes.route('/<int:id>', methods=['PUT'])
 def update_product(id):
     product = Product.query.get(id)
     if not product:
         return {"errors": ["Product not found"]}, 404
     form = form = ProductForm()
-    form['csrf_token'].data = request.cookies['csrf_token']
     form['csrf_token'].data = request.cookies['csrf_token']
     if form.validate_on_submit():
         product.name = form.data['name']
@@ -84,9 +86,13 @@ def update_product(id):
                             image_url=response['url'],
                         )
                         db.session.add(image)
+            try:
                 db.session.commit()
+            except Exception as e:
+                return {"errors": str(e)}, 400
         return product.to_dict(), 200
     return {'errors': validation_errors_to_error_messages(form.errors)}, 400
+
 
 
 @product_routes.route('/<int:id>', methods=['DELETE'])
