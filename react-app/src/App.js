@@ -6,6 +6,7 @@ import LoginFormPage from "./components/LoginFormPage";
 import { authenticate } from "./store/session";
 
 import ProductComponent from './components/Product/ProductComponent';
+import ProductList from './components/Product/ProductList';
 import Navigation from "./components/Navigation";
 
 function App() {
@@ -29,6 +30,9 @@ function App() {
           </Route>
           <Route path="/products/:id">
             <ProductComponent />
+          </Route>
+          <Route path="/products">
+            <ProductList />
           </Route>
         </Switch>
       )}

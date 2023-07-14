@@ -13,10 +13,14 @@ product_routes = Blueprint('products', __name__)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-@product_routes.route('/', methods=['GET'])
+@product_routes.route('', methods=['GET'])
 def get_products():
-    products = Product.query.all()/home/scarlettrobe/aa-projects/MiamiKev/app/seeds
-    return {'products': [product.to_dict() for product in products]}
+    products = Product.query.all()
+    product_list = []
+    for product in products:
+        product_list.append(product.to_dict())
+    return {'products': product_list}
+
 
 
 @product_routes.route('/', methods=['POST'])
