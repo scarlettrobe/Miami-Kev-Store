@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { updateProduct } from '../../store/product';
-import './Product.css'
+import './Product.css';
 
 function ProductComponent() {
     const [product, setProduct] = useState(null);
-    const [isEditing, setIsEditing] = useState({ name: false, description: false, price: false });
-    const [editableProduct, setEditableProduct] = useState({ name: '', description: '', price: 0 });
+    const [isEditing, setIsEditing] = useState(false);
+    const [editableProduct, setEditableProduct] = useState({ name: '', description: '', price: 0, images: [] });
 
     const dispatch = useDispatch();
     const { id } = useParams();
@@ -22,71 +22,79 @@ function ProductComponent() {
             })
             .then(data => {
                 setProduct(data);
-                setEditableProduct({ name: data.name, description: data.description, price: data.price });
+                setEditableProduct({ name: data.name, description: data.description, price: data.price, images: [] });
             })
             .catch(error => console.error('Error:', error));
     }, [id]);
 
-    const handleEdit = (field) => {
-        setIsEditing({ ...isEditing, [field]: true });
+    const handleEdit = () => {
+        setIsEditing(true);
     }
 
     const handleInputChange = (e, field) => {
-        setEditableProduct({ ...editableProduct, [field]: e.target.value });
+        if (field === 'images') {
+            setEditableProduct({ ...editableProduct, [field]: [...e.target.files] });
+        } else {
+            setEditableProduct({ ...editableProduct, [field]: e.target.value });
+        }
     }
 
-    const handleSave = async (field) => {
-        setIsEditing({ ...isEditing, [field]: false });
-
-        if (editableProduct[field] !== product[field]) {
-            const updatedProduct = { ...product, [field]: editableProduct[field] };
-            setProduct(updatedProduct);
-
-            const resultAction = await dispatch(updateProduct(updatedProduct));
-            if (updateProduct.fulfilled.match(resultAction)) {
+    const handleSave = () => {
+        setIsEditing(false);
+        const updatedProduct = { ...product, ...editableProduct };
+        setProduct(updatedProduct);
+    
+        dispatch(updateProduct(updatedProduct))
+        .then((response) => {
+            if (response.ok) {
                 console.log("Updated successfully");
+                // Here, you can handle the response as you need
+                response.json().then(updatedProduct => {
+                    // Handle the updated product as you need
+                })
             } else {
                 console.log("Failed to update");
             }
-        }
+        })
+        .catch((error) => {
+            console.error("Error during update: ", error);
+        });
     }
-
-    const handleKeyDown = (e, field) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSave(field);
-        }
-    }
+    
 
     return (
         <div>
             <h1>Product Details</h1>
             {product && (
                 <div>
-                    <h1 onClick={() => handleEdit('name')}>
-                        {isEditing.name
-                            ? <input type="text" value={editableProduct.name} onChange={(e) => handleInputChange(e, 'name')} onBlur={() => handleSave('name')} onKeyDown={(e) => handleKeyDown(e, 'name')} autoFocus />
+                    <h1 onClick={handleEdit}>
+                        {isEditing
+                            ? <input type="text" value={editableProduct.name} onChange={(e) => handleInputChange(e, 'name')} />
                             : product.name
                         }
                     </h1>
-                    <p onClick={() => handleEdit('description')}>
-                        {isEditing.description
-                            ? <textarea value={editableProduct.description} onChange={(e) => handleInputChange(e, 'description')} onBlur={() => handleSave('description')} onKeyDown={(e) => handleKeyDown(e, 'description')} autoFocus />
+                    <p onClick={handleEdit}>
+                        {isEditing
+                            ? <textarea value={editableProduct.description} onChange={(e) => handleInputChange(e, 'description')} />
                             : product.description
                         }
                     </p>
-                    <p onClick={() => handleEdit('price')}>
+                    <p onClick={handleEdit}>
                         Price: 
-                        {isEditing.price
-                            ? <input type="number" value={editableProduct.price} onChange={(e) => handleInputChange(e, 'price')} onBlur={() => handleSave('price')} onKeyDown={(e) => handleKeyDown(e, 'price')} autoFocus />
+                        {isEditing
+                            ? <input type="number" value={editableProduct.price} onChange={(e) => handleInputChange(e, 'price')} />
                             : product.price
                         }
                     </p>
-                    <div className='productlist'>
-                        {product.images.map((image, index) => (
-                            <img id='productlist' key={index} src={image.image_url} alt={`${product.name} ${index}`} />
-                        ))}
+                    <div onClick={handleEdit}>
+                        {isEditing
+                            ? <input type="file" multiple onChange={(e) => handleInputChange(e, 'images')} />
+                            : product.images.map((image, index) => (
+                                <img id='productlist' key={index} src={image.image_url} alt={`${product.name} ${index}`} />
+                              ))
+                        }
                     </div>
+                    {isEditing && <button onClick={handleSave}>Save</button>}
                 </div>
             )}
         </div>

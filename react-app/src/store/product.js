@@ -48,58 +48,60 @@ export const getProduct = (id) => async (dispatch) => {
         return product
     }
 }
-
 export const createProduct = (product) => async (dispatch) => {
+    const { images, ...otherProductDetails } = product;
+
+    const formData = new FormData();
+    Object.entries(otherProductDetails).forEach(([key, value]) => {
+        formData.append(key, value);
+    });
+
+    // Append 'images' as an array
+    for (let i = 0; i < images.length; i++) {
+        formData.append('images', images[i]);
+    }
+
     const response = await fetch('/api/products/', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            images: product.images 
-        })
+        body: formData
     });
+
     if (response.ok) {
         const newProduct = await response.json();
         dispatch(makeProduct(newProduct));
         return newProduct;
     }
 }
+export const updateProduct = (product) => {
+    return async dispatch => {
+        const { images, ...otherProductDetails } = product;
 
+        const formData = new FormData();
+        Object.entries(otherProductDetails).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
 
-export const updateProduct = (product) => async (dispatch) => {
-    const response = await fetch(`/api/products/${product.id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            images: product.images 
-        })
-    });
-    if (response.ok) {
-        const updatedProduct = await response.json();
-        dispatch(editProduct(updatedProduct));
-        return updatedProduct;
+        // Append 'images' as an array
+        for (let i = 0; i < images.length; i++) {
+            formData.append('images', images[i]);
+        }
+
+        const response = await fetch(`/api/products/${product.id}`, {
+            method: 'PUT',
+            body: formData
+        });
+
+        if(response.ok) {
+            dispatch(editProduct(product));
+            return response;
+        } else {
+            throw new Error(`Update failed: ${response.status}`);
+        }
     }
 }
 
-export const removeProduct = (id) => async (dispatch) => {
-    const response = await fetch(`/api/products/${id}`, {
-        method: 'DELETE',
-    })
-    if (response.ok) {
-        const deletedProduct = await response.json()
-        dispatch(deleteProduct(id))
-        return deletedProduct
-    }
-}
+
+
 
 /* Reducer */
 

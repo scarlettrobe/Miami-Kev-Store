@@ -8,4 +8,4 @@ class ProductForm(FlaskForm):
     name = StringField('name', validators=[DataRequired()])
     description = TextAreaField('description', validators=[Optional()])
     price = FloatField('price', validators=[DataRequired()])
-    images = FileField('images', validators=[FileRequired(), FileAllowed(list(ALLOWED_EXTENSIONS))])
+    images = FileField('images', validators=[Optional(), FileAllowed(list(ALLOWED_EXTENSIONS))])

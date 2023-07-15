@@ -1,10 +1,10 @@
 
 from flask import Blueprint, jsonify, request
-from flask_login import login_required
-from app.models import Product, ProductImage
-from app.models import User, db
 from app.forms.ProductForm import ProductForm
 from app.api.aws import upload_file_to_s3, get_unique_filename, remove_file_from_s3
+from app.models import Product, ProductImage, db
+from app.api.auth_routes import validation_errors_to_error_messages
+
 
 
 
@@ -60,41 +60,52 @@ def get_product(id):
     return product.to_dict()
 
 
-
 @product_routes.route('/<int:id>', methods=['PUT'])
 def update_product(id):
     product = Product.query.get(id)
     if not product:
         return {"errors": ["Product not found"]}, 404
-    form = form = ProductForm()
+    form = ProductForm()
     form['csrf_token'].data = request.cookies['csrf_token']
     if form.validate_on_submit():
         product.name = form.data['name']
         product.description = form.data['description']
         product.price = form.data['price']
 
+        new_images = []
         if "images" in request.files:
-            # Delete all existing images for this product
-            for image in product.images:
-                remove_file_from_s3(image.image_url)
-                db.session.delete(image)
-
-            # Add new images
+            print("Images received: ", len(request.files.getlist("images"))) # Debugging line
             for image_file in request.files.getlist("images"):
                 if image_file.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
                     image_file.filename = get_unique_filename(image_file.filename)
                     response = upload_file_to_s3(image_file)
+                    print("Response from S3: ", response) # Add this line
                     if "errors" not in response:
                         image = ProductImage(
                             product_id=product.id,
                             image_url=response['url'],
                         )
-                        db.session.add(image)
+                        new_images.append(image)
+                        print("Image uploaded: ", response['url']) # Debugging line
+
+            if new_images:  # Check if new images have been added successfully
+                for image in product.images:
+                    remove_file_from_s3(image.image_url)
+                    db.session.delete(image)
+
+                for image in new_images:
+                    db.session.add(image)
+            else:
+                print("No new images to upload") # Debugging line
             try:
                 db.session.commit()
             except Exception as e:
                 return {"errors": str(e)}, 400
+        else:
+            print("No image files in the request") # Debugging line
         return product.to_dict(), 200
+    else:
+        print("Form validation failed") # Debugging line
     return {'errors': validation_errors_to_error_messages(form.errors)}, 400
 
 
