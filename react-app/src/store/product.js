@@ -91,14 +91,14 @@ export const updateProduct = (product) => {
             body: formData
         });
 
-        if(response.ok) {
+        if (response.ok) {
             dispatch(editProduct(product));
             return response;
         } else {
             throw new Error(`Update failed: ${response.status}`);
         }
     }
-}
+};
 
 
 

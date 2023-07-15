@@ -65,6 +65,7 @@ def update_product(id):
     product = Product.query.get(id)
     if not product:
         return {"errors": ["Product not found"]}, 404
+
     form = ProductForm()
     form['csrf_token'].data = request.cookies['csrf_token']
     if form.validate_on_submit():
@@ -72,41 +73,34 @@ def update_product(id):
         product.description = form.data['description']
         product.price = form.data['price']
 
-        new_images = []
-        if "images" in request.files:
-            print("Images received: ", len(request.files.getlist("images"))) # Debugging line
+        if "images" in request.files:  # Only process images if they exist
+            new_images = []
             for image_file in request.files.getlist("images"):
-                if image_file.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+                filename_parts = image_file.filename.rsplit('.', 1)
+                if len(filename_parts) == 2 and filename_parts[1].lower() in ALLOWED_EXTENSIONS:
                     image_file.filename = get_unique_filename(image_file.filename)
                     response = upload_file_to_s3(image_file)
-                    print("Response from S3: ", response) # Add this line
                     if "errors" not in response:
                         image = ProductImage(
                             product_id=product.id,
                             image_url=response['url'],
                         )
                         new_images.append(image)
-                        print("Image uploaded: ", response['url']) # Debugging line
 
-            if new_images:  # Check if new images have been added successfully
+            if new_images:  # If there are new images, delete old ones and add new ones
                 for image in product.images:
                     remove_file_from_s3(image.image_url)
                     db.session.delete(image)
-
                 for image in new_images:
                     db.session.add(image)
-            else:
-                print("No new images to upload") # Debugging line
-            try:
-                db.session.commit()
-            except Exception as e:
-                return {"errors": str(e)}, 400
-        else:
-            print("No image files in the request") # Debugging line
+
+        db.session.commit()  # Commit changes whether there are new images or not
         return product.to_dict(), 200
+
     else:
-        print("Form validation failed") # Debugging line
-    return {'errors': validation_errors_to_error_messages(form.errors)}, 400
+        return {'errors': validation_errors_to_error_messages(form.errors)}, 400
+
+
 
 
 

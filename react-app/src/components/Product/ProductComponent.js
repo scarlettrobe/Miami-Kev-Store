@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { updateProduct } from '../../store/product';
 import './Product.css';
 
+
 function ProductComponent() {
     const [product, setProduct] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -43,21 +44,15 @@ function ProductComponent() {
         setIsEditing(false);
         const updatedProduct = { ...product, ...editableProduct };
         setProduct(updatedProduct);
-    
-        dispatch(updateProduct(updatedProduct))
-        .then((response) => {
-            if (response.ok) {
-                console.log("Updated successfully");
-                // Here, you can handle the response as you need
-                response.json().then(updatedProduct => {
-                    // Handle the updated product as you need
-                })
-            } else {
-                console.log("Failed to update");
-            }
+
+        // This is the new code that returns a promise
+        const updateProductPromise = dispatch(updateProduct(updatedProduct));
+
+        updateProductPromise.then(() => {
+            console.log('Product updated successfully');
         })
-        .catch((error) => {
-            console.error("Error during update: ", error);
+        .catch(error => {
+            console.log('Error updating product:', error);
         });
     }
     
