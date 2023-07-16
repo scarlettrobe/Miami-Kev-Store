@@ -7,6 +7,7 @@ import { authenticate } from "./store/session";
 
 import ProductComponent from './components/Product/ProductComponent';
 import ProductList from './components/Product/ProductList';
+import ProductCreate from './components/Product/ProductCreate'; // make sure you import ProductCreate
 import Navigation from "./components/Navigation";
 
 function App() {
@@ -33,6 +34,9 @@ function App() {
           </Route>
           <Route path="/products">
             <ProductList />
+          </Route>
+          <Route path="/create-product">
+            <ProductCreate />
           </Route>
         </Switch>
       )}

@@ -15,6 +15,9 @@ function Navigation({ isLoaded }) {
           <img id='logo' src={nose112} alt="Nose" />
         </NavLink>
       </li>
+      <li>
+        <NavLink to="/create-product" activeClassName="active">Create Product</NavLink>
+      </li>
       {isLoaded && (
         <li>
           <ProfileButton user={sessionUser} />

@@ -23,7 +23,7 @@ def get_products():
 
 
 
-@product_routes.route('/', methods=['POST'])
+@product_routes.route('', methods=['POST'])
 def create_product():
     form = ProductForm()
     form['csrf_token'].data = request.cookies['csrf_token']

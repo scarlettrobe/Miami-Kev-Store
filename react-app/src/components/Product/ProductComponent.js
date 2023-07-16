@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { updateProduct } from '../../store/product';
+import { updateProduct, removeProduct } from '../../store/product';
 import './Product.css';
-
 
 function ProductComponent() {
     const [product, setProduct] = useState(null);
@@ -11,6 +10,7 @@ function ProductComponent() {
     const [editableProduct, setEditableProduct] = useState({ name: '', description: '', price: 0, images: [] });
 
     const dispatch = useDispatch();
+    const history = useHistory();
     const { id } = useParams();
 
     useEffect(() => {
@@ -40,22 +40,28 @@ function ProductComponent() {
         }
     }
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setIsEditing(false);
         const updatedProduct = { ...product, ...editableProduct };
         setProduct(updatedProduct);
 
-        // This is the new code that returns a promise
-        const updateProductPromise = dispatch(updateProduct(updatedProduct));
-
-        updateProductPromise.then(() => {
+        try {
+            await dispatch(updateProduct(updatedProduct));
             console.log('Product updated successfully');
-        })
-        .catch(error => {
+        } catch (error) {
             console.log('Error updating product:', error);
-        });
+        }
     }
-    
+
+    const handleDelete = async () => {
+        try {
+            await dispatch(removeProduct(product.id));
+            console.log('Product deleted successfully');
+            history.push('/products');  // Redirect to the products page
+        } catch (error) {
+            console.log('Error deleting product:', error);
+        }
+    }
 
     return (
         <div>
@@ -89,7 +95,12 @@ function ProductComponent() {
                               ))
                         }
                     </div>
-                    {isEditing && <button onClick={handleSave}>Save</button>}
+                    {isEditing ? (
+                        <div>
+                            <button onClick={handleSave}>Save</button>
+                            <button onClick={handleDelete}>Delete</button>
+                        </div>
+                    ) : null}
                 </div>
             )}
         </div>
