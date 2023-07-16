@@ -7,8 +7,9 @@ import { authenticate } from "./store/session";
 
 import ProductComponent from './components/Product/ProductComponent';
 import ProductList from './components/Product/ProductList';
-import ProductCreate from './components/Product/ProductCreate'; // make sure you import ProductCreate
+import ProductCreate from './components/Product/ProductCreate';
 import Navigation from "./components/Navigation";
+import Sidebar from "./components/SideNavBar/Sidebar";
 
 function App() {
   const dispatch = useDispatch();
@@ -21,6 +22,7 @@ function App() {
   return (
     <>
       <Navigation isLoaded={isLoaded} />
+      <Sidebar />
       {isLoaded && (
         <Switch>
           <Route path="/login">
