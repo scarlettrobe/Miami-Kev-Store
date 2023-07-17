@@ -4,12 +4,14 @@ import { Route, Switch } from "react-router-dom";
 import SignupFormPage from "./components/SignupFormPage";
 import LoginFormPage from "./components/LoginFormPage";
 import { authenticate } from "./store/session";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 import ProductComponent from './components/Product/ProductComponent';
 import ProductList from './components/Product/ProductList';
 import ProductCreate from './components/Product/ProductCreate';
 import Navigation from "./components/Navigation";
 import Sidebar from "./components/SideNavBar/Sidebar";
+import OrderManagement from "./components/Order/OrderManagement";
 
 function App() {
   const dispatch = useDispatch();
@@ -25,6 +27,9 @@ function App() {
       <Sidebar />
       {isLoaded && (
         <Switch>
+          <ProtectedRoute exact path="/">
+            <OrderManagement />
+          </ProtectedRoute>
           <Route path="/login">
             <LoginFormPage />
           </Route>

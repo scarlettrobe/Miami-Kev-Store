@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { login } from "../../store/session";
 import { useDispatch, useSelector } from "react-redux";
-import { Redirect, useHistory } from "react-router-dom";
+import { Redirect, useHistory, Link } from "react-router-dom"; // Add Link import
 import "./LoginForm.css";
 
 function LoginFormPage() {
@@ -37,7 +37,7 @@ function LoginFormPage() {
   };
 
   const demo = async () => {
-    const data = await dispatch(login('demo@lit.com', 'demopass'))
+    const data = await dispatch(login('demo@aa.io', 'password'))
     if (data) {
       setErrors(data);
     }
@@ -91,6 +91,10 @@ function LoginFormPage() {
         <button className="buttons" onClick={demo}>
           Demo User
         </button>
+      </div>
+      <div>
+        <span>Don't have an account? </span>
+        <Link to="/signup">Sign Up</Link> 
       </div>
     </div>
   );

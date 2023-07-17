@@ -11,12 +11,9 @@ function Sidebar() {
     setIsOpen(!isOpen);
   };
 
-  // This function closes the sidebar and performs navigation
   const closeSidebarAndNavigate = (e, navigateTo) => {
     e.preventDefault();
     setIsOpen(false);
-    // Use a timeout to allow the sidebar closing animation to complete
-    // before redirecting. Adjust the delay as necessary.
     setTimeout(() => {
       window.location.href = navigateTo;
     }, 200);
@@ -24,17 +21,17 @@ function Sidebar() {
 
   return (
     <div>
-<button className="sidebar-toggle-button" onClick={toggleSidebar}>
-  {isOpen 
-    ? <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: '#025af2' }} /> 
-    : <FontAwesomeIcon icon={faCircleChevronRight} style={{ color: '#005af5' }} />
-  }
-</button>
-
+      <button className="sidebar-toggle-button" onClick={toggleSidebar}>
+        {isOpen 
+          ? <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: '#025af2' }} /> 
+          : <FontAwesomeIcon icon={faCircleChevronRight} style={{ color: '#005af5' }} />
+        }
+      </button>
+      
       {isOpen && (
         <div className='sidebar'>
           <ul>
-            <li>Order Management</li>
+            <li><Link to="/" onClick={(e) => closeSidebarAndNavigate(e, "/")}>Order Management</Link></li>
             <li><Link to="/products" onClick={(e) => closeSidebarAndNavigate(e, "/products")}>View Products</Link></li>
             <li><Link to="/create-product" onClick={(e) => closeSidebarAndNavigate(e, "/create-product")}>Create Product</Link></li>
           </ul>

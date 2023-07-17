@@ -1,46 +1,52 @@
-from app.models import db, Product, ProductImage, environment, SCHEMA
-from sqlalchemy.sql import text
+from app.models import db, Product, ProductImage
 
 def seed_products():
-    product1 = Product(
-        name='Product 1',
-        description='This is product 1',
-        price=100,
-    )
-    
-    image1_product1 = ProductImage(
-        product_id=1,
-        image_url='https://miamikevbucket.s3.amazonaws.com/stickersheet5.png'
-    )
+    products_data = [
+        {
+            'name': 'Product 1',
+            'description': 'This is product 1',
+            'price': 100,
+            'images': [
+                'https://miamikevbucket.s3.amazonaws.com/stickersheet5.png'
+            ]
+        },
+        {
+            'name': 'Product 2',
+            'description': 'This is product 2',
+            'price': 200,
+            'images': [
+                'https://miamikevbucket.s3.amazonaws.com/stickerbatch3.png',
+                'https://miamikevbucket.s3.amazonaws.com/fishkev700.png'
+            ]
+        },
+        {
+            'name': 'Product 3',
+            'description': 'This is product 3',
+            'price': 300,
+            'images': [
+                'https://miamikevbucket.s3.amazonaws.com/vintage.png',
+            ]
+        },
+        {
+            'name': 'Product 4',
+            'description': 'This is product 4',
+            'price': 400,
+            'images': [
+                'https://miamikevbucket.s3.amazonaws.com/remyhat700.png'
+            ]
+        },
+    ]
 
-    product2 = Product(
-        name='Product 2',
-        description='This is product 2',
-        price=200,
-    )
-    
-    image1_product2 = ProductImage(
-        product_id=2,
-        image_url='https://miamikevbucket.s3.amazonaws.com/stickerbatch3.png'
-    )
-    image2_product2 = ProductImage(
-        product_id=2,
-        image_url='https://miamikevbucket.s3.amazonaws.com/fishkev700.png'
-    )
+    for product_data in products_data:
+        product = Product(name=product_data['name'], description=product_data['description'], price=product_data['price'])
+        for image_url in product_data['images']:
+            product.images.append(ProductImage(image_url=image_url))
+        db.session.add(product)
 
-
-    db.session.add(product1)
-    db.session.add(image1_product1)
-    db.session.add(product2)
-    db.session.add(image1_product2)
-    db.session.add(image2_product2)
     db.session.commit()
 
+
 def undo_products():
-    if environment == "production":
-        db.session.execute(f"TRUNCATE table {SCHEMA}.products RESTART IDENTITY CASCADE;")
-        db.session.execute(f"TRUNCATE table {SCHEMA}.product_images RESTART IDENTITY CASCADE;")
-    else:
-        db.session.execute(text("DELETE FROM products"))
-        db.session.execute(text("DELETE FROM product_images"))
+    db.session.execute('TRUNCATE products RESTART IDENTITY CASCADE;')
+    db.session.execute('TRUNCATE product_images RESTART IDENTITY CASCADE;')
     db.session.commit()

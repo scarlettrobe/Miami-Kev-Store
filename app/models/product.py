@@ -11,7 +11,11 @@ class Product(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     price = db.Column(db.Float, nullable=False)
-    images = db.relationship('ProductImage', backref='product')
+
+    # New relationship
+    order_items = db.relationship('OrderItem', back_populates='product')
+    images = db.relationship('ProductImage', back_populates='product')
+
 
     def to_dict(self):
         return {
@@ -19,14 +23,18 @@ class Product(db.Model):
             'name': self.name,
             'description': self.description,
             'price': self.price,
-            'images': [image.to_dict() for image in self.images]
+            'images': [image.to_dict() for image in self.images],
+            'order_items': [order_item.to_dict() for order_item in self.order_items]
         }
 
 class ProductImage(db.Model):
     __tablename__ = 'product_images'
     id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('products.id')), nullable=False)
     image_url = db.Column(db.String(500), nullable=True) 
+
+    # New relationship
+    product = db.relationship('Product', back_populates='images')
 
     def to_dict(self):
         return {
