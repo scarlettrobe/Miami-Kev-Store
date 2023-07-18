@@ -4,6 +4,8 @@ from app.forms.ProductForm import ProductForm
 from app.api.aws import upload_file_to_s3, get_unique_filename, remove_file_from_s3
 from app.models import Product, ProductImage, db
 from app.api.auth_routes import validation_errors_to_error_messages
+from app.models import Product, ProductImage, OrderItem, Order, db
+
 
 
 
@@ -15,7 +17,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 @product_routes.route('', methods=['GET'])
 def get_products():
-    products = Product.query.all()
+    products = Product.query.filter_by(is_available=True).all()
     product_list = []
     for product in products:
         product_list.append(product.to_dict())
@@ -102,23 +104,16 @@ def update_product(id):
 
 
 
-
-
 @product_routes.route('/<int:id>', methods=['DELETE'])
 def delete_product(id):
     product = Product.query.get(id)
-    if not product:
+    if product is None:
         return {"errors": ["Product not found"]}, 404
 
-    # Delete product's images
-    for image in product.images:
-        remove_file_from_s3(image.image_url)
-        db.session.delete(image)
-
-    db.session.delete(product)
+    product.is_available = False
     db.session.commit()
 
-    return {"message": "Product deleted successfully"}, 200
+    return {"message": "Product deleted"}
 
 
 

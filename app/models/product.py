@@ -11,10 +11,13 @@ class Product(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     price = db.Column(db.Float, nullable=False)
+    is_available = db.Column(db.Boolean, nullable=False, default=True)
+
 
     # New relationship
     order_items = db.relationship('OrderItem', back_populates='product')
     images = db.relationship('ProductImage', back_populates='product')
+    
 
 
     def to_dict(self):
