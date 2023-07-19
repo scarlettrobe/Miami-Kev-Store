@@ -38,6 +38,17 @@ const OrderManagement = () => {
     setSelectedCustomer(null);
   };
 
+  const handleAddProduct = (orderId, event) => {
+    const productId = event.target.value;
+    addProductToOrder(orderId, productId);
+  };
+
+  const handleRemoveProduct = (orderId, event) => {
+    const productId = event.target.value;
+    removeProductFromOrder(orderId, productId);
+  };
+
+
   const addProductToOrder = (orderId, productId) => {
     fetch(`/api/orders/${orderId}/products/${productId}`, {
       method: 'POST',
@@ -60,15 +71,15 @@ const OrderManagement = () => {
     });
   };
   return (
-    <div>
+    <div className="order-management">
       <h1>Order Management</h1>
       {selectedCustomer && (
         <CustomerInfoModal customerName={selectedCustomer} onClose={closeCustomerModal} />
       )}
       {orders.map(order => (
-        <div key={order.id}>
+        <div key={order.id} className="order">
           <p>
-            <a onClick={() => openCustomerModal(order.customer_name)}>Customer Name: {order.customer_name}</a>
+            <a href="#" onClick={() => openCustomerModal(order.customer_name)}>Customer Name: {order.customer_name}</a>
           </p>
           <p>Total Price: {order.total_price}</p>
           <select>
@@ -80,27 +91,38 @@ const OrderManagement = () => {
             <option value="cancelled">Cancelled</option>
             <option value="refunded">Refunded</option>
           </select>
-          <p>Order Items:</p>
-          {order.order_items.map(item => (
-            <div key={item.id}>
-              <p>Product Name: {item.product_name}</p>
-              <p>Quantity: {item.quantity}</p>
-            </div>
-          ))}
-          {products.map(product => (
-            <div key={product.id}>
-              <button onClick={() => addProductToOrder(order.id, product.id)}>
-                Add Product: {product.name}
-              </button>
-              <button onClick={() => removeProductFromOrder(order.id, product.id)}>
-                Remove Product: {product.name}
-              </button>
-            </div>
-          ))}
+          <div className="order-items">
+            <p>Order Items:</p>
+            {order.order_items.map(item => (
+              <div key={item.id}>
+                <p>Product Name: {item.product_name}</p>
+                <p>Quantity: {item.quantity}</p>
+              </div>
+            ))}
+          </div>
+          <div>
+            <select onChange={(event) => handleAddProduct(order.id, event)} className="dropdown">
+              <option value="">Add Product...</option>
+              {products.map(product => (
+                <option key={product.id} value={product.id}>
+                  {product.name}
+                </option>
+              ))}
+            </select>
+            <select onChange={(event) => handleRemoveProduct(order.id, event)} className="dropdown">
+              <option value="">Remove Product...</option>
+              {order.order_items.map(item => (
+                <option key={item.id} value={item.product_id}>
+                  {item.product_name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       ))}
     </div>
   );
+
 };
 
 export default OrderManagement;
