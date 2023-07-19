@@ -1,88 +1,78 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchOrders, changeOrderStatus, addProductToOrder, removeProductFromOrder } from '../../store/order';
+import CustomerInfoModal from './CustomerInfoModal';
 import './order.css';
 
-
-const CustomerInfoModal = ({customerName, onClose}) => {
-  return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <h2>{customerName}'s Information</h2>
-        {/* Here, you can add more customer information including shipping label and purchased items */}
-        <button onClick={onClose}>Close</button>
-      </div>
-    </div>
-  );
-};
-
 const OrderManagement = () => {
-  const [orders, setOrders] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const dispatch = useDispatch();
+  const orders = useSelector(state => Object.values(state.order));
+  const products = useSelector(state => Object.values(state.product));
 
   useEffect(() => {
-    fetch('/api/orders')
-      .then(response => response.json())
-      .then(data => setOrders(data.orders));
-      
-    fetch('/api/products')
-      .then(response => response.json())
-      .then(data => setProducts(data.products));
-  }, []);
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
+  useEffect(() => {
+    console.log('Orders updated:', orders);
+  }, [orders]);
+  
 
+  const handleStatusChange = (id, event) => {
+    const newStatus = event.target.value;
+    console.log(`Order ID: ${id}`);
+    console.log(`New Status: ${newStatus}`);
+    dispatch(changeOrderStatus(id, newStatus));
+  };
+  
+
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const openCustomerModal = (customerName) => {
     setSelectedCustomer(customerName);
+  };
+
+  const handleAddProduct = (orderId, event) => {
+    const productId = event.target.value;
+    dispatch(addProductToOrder(orderId, productId));
+  };
+  
+  const handleRemoveProduct = (orderId, event) => {
+    const productId = event.target.value;
+    dispatch(removeProductFromOrder(orderId, productId));
   };
 
   const closeCustomerModal = () => {
     setSelectedCustomer(null);
   };
 
-  const handleAddProduct = (orderId, event) => {
-    const productId = event.target.value;
-    addProductToOrder(orderId, productId);
+  // new state for checkboxes
+  const [checkedOrders, setCheckedOrders] = useState({});
+
+  // handle check change
+  const handleCheckChange = (orderId) => {
+    setCheckedOrders({ ...checkedOrders, [orderId]: !checkedOrders[orderId] });
   };
 
-  const handleRemoveProduct = (orderId, event) => {
-    const productId = event.target.value;
-    removeProductFromOrder(orderId, productId);
-  };
-
-
-  const addProductToOrder = (orderId, productId) => {
-    fetch(`/api/orders/${orderId}/products/${productId}`, {
-      method: 'POST',
-    }).then(() => {
-      // Refresh the orders after a product is added.
-      fetch('/api/orders')
-        .then(response => response.json())
-        .then(data => setOrders(data.orders));
-    });
-  };
-
-  const removeProductFromOrder = (orderId, productId) => {
-    fetch(`/api/orders/${orderId}/products/${productId}`, {
-      method: 'DELETE',
-    }).then(() => {
-      // Refresh the orders after a product is removed.
-      fetch('/api/orders')
-        .then(response => response.json())
-        .then(data => setOrders(data.orders));
-    });
-  };
   return (
     <div className="order-management">
       <h1>Order Management</h1>
+      <button className="create-button">Create New Order</button>
+      <button className="delete-button">Delete Selected Orders</button>
       {selectedCustomer && (
         <CustomerInfoModal customerName={selectedCustomer} onClose={closeCustomerModal} />
       )}
       {orders.map(order => (
         <div key={order.id} className="order">
+          <input 
+            type="checkbox" 
+            checked={checkedOrders[order.id] || false} 
+            onChange={() => handleCheckChange(order.id)}
+          />
           <p>
             <a href="#" onClick={() => openCustomerModal(order.customer_name)}>Customer Name: {order.customer_name}</a>
           </p>
           <p>Total Price: {order.total_price}</p>
-          <select>
+          <select value={order.status} onChange={(event) => handleStatusChange(order.id, event)}>
             <option value="pending_payment">Pending Payment</option>
             <option value="failed">Failed</option>
             <option value="processing">Processing</option>
@@ -93,8 +83,8 @@ const OrderManagement = () => {
           </select>
           <div className="order-items">
             <p>Order Items:</p>
-            {order.order_items.map(item => (
-              <div key={item.id}>
+            {order.order_items.map((item, index) => (
+              <div key={index}>
                 <p>Product Name: {item.product_name}</p>
                 <p>Quantity: {item.quantity}</p>
               </div>
@@ -103,16 +93,16 @@ const OrderManagement = () => {
           <div>
             <select onChange={(event) => handleAddProduct(order.id, event)} className="dropdown">
               <option value="">Add Product...</option>
-              {products.map(product => (
-                <option key={product.id} value={product.id}>
+              {products.map((product, index) => (
+                <option key={index} value={product.id}>
                   {product.name}
                 </option>
               ))}
             </select>
             <select onChange={(event) => handleRemoveProduct(order.id, event)} className="dropdown">
               <option value="">Remove Product...</option>
-              {order.order_items.map(item => (
-                <option key={item.id} value={item.product_id}>
+              {order.order_items.map((item, index) => (
+                <option key={index} value={item.product_id}>
                   {item.product_name}
                 </option>
               ))}
@@ -122,7 +112,6 @@ const OrderManagement = () => {
       ))}
     </div>
   );
-
 };
 
 export default OrderManagement;

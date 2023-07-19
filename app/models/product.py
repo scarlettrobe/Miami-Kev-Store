@@ -1,5 +1,4 @@
 from .db import db, environment, SCHEMA, add_prefix_for_prod
-from flask_sqlalchemy import SQLAlchemy
 
 class Product(db.Model):
     __tablename__ = 'products'
@@ -13,12 +12,8 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     is_available = db.Column(db.Boolean, nullable=False, default=True)
 
-
-    # New relationship
     order_items = db.relationship('OrderItem', back_populates='product')
     images = db.relationship('ProductImage', back_populates='product')
-    
-
 
     def to_dict(self):
         return {
@@ -26,9 +21,9 @@ class Product(db.Model):
             'name': self.name,
             'description': self.description,
             'price': self.price,
-            'images': [image.to_dict() for image in self.images],
             'order_items': [order_item.to_dict() for order_item in self.order_items]
         }
+
 
 class ProductImage(db.Model):
     __tablename__ = 'product_images'

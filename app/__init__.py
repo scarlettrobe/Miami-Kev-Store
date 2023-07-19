@@ -13,7 +13,8 @@ from .seeds import seed_commands
 from .config import Config
 
 app = Flask(__name__, static_folder='../react-app/build', static_url_path='/')
-app.config['FLASK_DEBUG'] = False
+app.config['FLASK_DEBUG'] = True
+app.config['FLASK_DEBUG'] = os.environ.get('FLASK_ENV') == 'development'
 
 # Setup login manager
 login = LoginManager(app)

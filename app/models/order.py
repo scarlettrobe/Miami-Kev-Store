@@ -16,7 +16,7 @@ class Order(db.Model):
     total_price = db.Column(db.Float, nullable=False)
     order_date = db.Column(db.DateTime, nullable=False)
 
-    # New relationship
+    # Updated relationship
     user = db.relationship('User', back_populates='orders')
     order_items = db.relationship('OrderItem', back_populates='order')
 
@@ -34,6 +34,7 @@ class Order(db.Model):
             'order_items': [order_item.to_dict() for order_item in self.order_items]
         }
 
+
 class OrderItem(db.Model):
     __tablename__ = 'order_items'
 
@@ -45,7 +46,6 @@ class OrderItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('products.id')), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
 
-    # New relationship
     order = db.relationship('Order', back_populates='order_items')
     product = db.relationship('Product', back_populates='order_items')
 
