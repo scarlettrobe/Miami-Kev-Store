@@ -16,7 +16,8 @@ class User(db.Model, UserMixin):
     hashed_password = db.Column(db.String(255), nullable=False)
 
     # New relationship
-    orders = db.relationship('Order', backref='user')
+    
+    orders = db.relationship('Order', backref='user_orders')
 
     @property
     def password(self):

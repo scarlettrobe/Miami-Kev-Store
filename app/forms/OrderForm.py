@@ -4,7 +4,6 @@ from wtforms.validators import DataRequired
 from wtforms import FieldList, FormField, IntegerField, SelectField
 from wtforms import DateTimeField
 
-
 class OrderItemForm(FlaskForm):
     product_id = IntegerField('product_id', validators=[DataRequired()])
     quantity = IntegerField('quantity', validators=[DataRequired()])
@@ -23,5 +22,4 @@ class OrderForm(FlaskForm):
     billing_address = StringField('billing_address', validators=[DataRequired()])
     shipping_address = StringField('shipping_address', validators=[DataRequired()])
     total_price = FloatField('total_price', validators=[DataRequired()])
-    # New Field
     order_items = FieldList(FormField(OrderItemForm), min_entries=1)

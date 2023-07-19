@@ -57,7 +57,7 @@ function ProductComponent() {
         try {
             await dispatch(removeProduct(product.id));
             console.log('Product deleted successfully');
-            history.push('/products');  // Redirect to the products page
+            history.push('/products');  
         } catch (error) {
             console.log('Error deleting product:', error);
         }

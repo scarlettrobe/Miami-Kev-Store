@@ -9,20 +9,22 @@ class Order(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('users.id')), nullable=False)
-    order_number = db.Column(db.String(255), nullable=False, unique=True)
-    order_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-    status = db.Column(Enum('pending_payment', 'failed', 'processing', 'completed', 'on_hold', 'cancelled', 'refunded', name='order_status'), nullable=False)
-    billing_address = db.Column(db.String(500), nullable=False)
-    shipping_address = db.Column(db.String(500), nullable=False)
+    order_number = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(255), nullable=False)
+    billing_address = db.Column(db.String(255), nullable=False)
+    shipping_address = db.Column(db.String(255), nullable=False)
     total_price = db.Column(db.Float, nullable=False)
+    order_date = db.Column(db.DateTime, nullable=False)
 
     # New relationship
-    order_items = db.relationship('OrderItem', backref='order')
+    user = db.relationship('User', back_populates='orders')
+    order_items = db.relationship('OrderItem', back_populates='order')
 
     def to_dict(self):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'customer_name': self.user.first_name + ' ' + self.user.last_name,
             'order_number': self.order_number,
             'order_date': self.order_date.isoformat(),
             'status': self.status,
@@ -31,6 +33,7 @@ class Order(db.Model):
             'total_price': self.total_price,
             'order_items': [order_item.to_dict() for order_item in self.order_items]
         }
+
 class OrderItem(db.Model):
     __tablename__ = 'order_items'
 
@@ -43,7 +46,7 @@ class OrderItem(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
 
     # New relationship
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    order = db.relationship('Order', back_populates='order_items')
     product = db.relationship('Product', back_populates='order_items')
 
     def to_dict(self):
@@ -51,5 +54,6 @@ class OrderItem(db.Model):
             'id': self.id,
             'order_id': self.order_id,
             'product_id': self.product_id,
+            'product_name': self.product.name,
             'quantity': self.quantity,
         }

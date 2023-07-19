@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 04df6a311d6e
+Revision ID: 8b2d5ec9a0d4
 Revises: 
-Create Date: 2023-07-17 11:55:58.070566
+Create Date: 2023-07-18 10:48:40.853908
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '04df6a311d6e'
+revision = '8b2d5ec9a0d4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,14 +41,13 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('order_number', sa.String(length=255), nullable=False),
-    sa.Column('order_date', sa.DateTime(), nullable=False),
-    sa.Column('status', sa.Enum('pending_payment', 'failed', 'processing', 'completed', 'on_hold', 'cancelled', 'refunded', name='order_status'), nullable=False),
-    sa.Column('billing_address', sa.String(length=500), nullable=False),
-    sa.Column('shipping_address', sa.String(length=500), nullable=False),
+    sa.Column('status', sa.String(length=255), nullable=False),
+    sa.Column('billing_address', sa.String(length=255), nullable=False),
+    sa.Column('shipping_address', sa.String(length=255), nullable=False),
     sa.Column('total_price', sa.Float(), nullable=False),
+    sa.Column('order_date', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('order_number')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('product_images',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -60,8 +59,8 @@ def upgrade():
     op.create_table('order_items',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('order_id', sa.Integer(), nullable=False),
-    sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('product_id', sa.Integer(), nullable=False),
+    sa.Column('quantity', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['order_id'], ['orders.id'], ),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),
     sa.PrimaryKeyConstraint('id')
