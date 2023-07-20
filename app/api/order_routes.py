@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_login import login_required
-from app.models import Order, OrderItem, db
+from app.models import Order, OrderItem, Product, db
 from app.forms.OrderForm import OrderForm, OrderItemForm, UpdateOrderStatusForm
 from app.api.auth_routes import validation_errors_to_error_messages
 
@@ -101,3 +101,53 @@ def delete_order(id):
         return {'message': 'Order deleted'}
     else:
         return {'errors': ['Order not found']}, 404
+
+@order_routes.route('/<int:orderId>/products/<int:productId>', methods=['POST'])
+@login_required
+def add_product_to_order(orderId, productId):
+    data = request.get_json()  # get the request data
+
+    if "quantity" not in data or not isinstance(data['quantity'], int):
+        return jsonify({"errors": ["Quantity is required and it must be an integer"]}), 400
+
+    quantity = data['quantity']
+
+    order = Order.query.get(orderId)
+    product = Product.query.get(productId)
+
+    if order and product:
+        # Check if the product already exists in the order
+        order_item = OrderItem.query.filter_by(order_id=orderId, product_id=productId).first()
+
+        if order_item:
+            # Product exists, update quantity
+            order_item.quantity += quantity
+        else:
+            # Product does not exist in the order, create a new OrderItem
+            order_item = OrderItem(
+                order_id=orderId,
+                product_id=productId,
+                quantity=quantity
+            )
+            db.session.add(order_item)
+
+        db.session.commit()
+
+        return order.to_dict()  # return the updated order
+    else:
+        return {'errors': ['Order or Product not found']}, 404
+
+
+
+
+@order_routes.route('/<int:orderId>/products/<int:productId>', methods=['DELETE'])
+@login_required
+def remove_product_from_order(orderId, productId):
+    order = Order.query.get(orderId)
+    order_item = OrderItem.query.filter_by(order_id=orderId, product_id=productId).first()
+    if order and order_item:
+        db.session.delete(order_item)
+        db.session.commit()
+        return order.to_dict()  # return the updated order
+    else:
+        return {'errors': ['Order or OrderItem not found']}, 404

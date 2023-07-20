@@ -67,18 +67,23 @@ export const changeOrderStatus = (id, status) => async (dispatch) => {
 
   
 
-export const addProductToOrder = (orderId, productId) => async (dispatch) => {
+export const addProductToOrder = (orderId, productId, quantity) => async (dispatch) => {
   const response = await fetch(`/api/orders/${orderId}/products/${productId}`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ quantity }),  // quantity is always 1
   });
 
   if (response.ok) {
-    dispatch(addProductToOrderAction(orderId, productId));
-    dispatch(fetchOrders());
+    const updatedOrder = await response.json();
+    dispatch(setOrders([updatedOrder]));  // update the Redux store with the updated order
   } else {
     throw new Error(`Failed to add product: ${response.status}`);
   }
 };
+
 
 export const removeProductFromOrder = (orderId, productId) => async (dispatch) => {
   const response = await fetch(`/api/orders/${orderId}/products/${productId}`, {
@@ -86,12 +91,13 @@ export const removeProductFromOrder = (orderId, productId) => async (dispatch) =
   });
 
   if (response.ok) {
-    dispatch(removeProductFromOrderAction(orderId, productId));
-    dispatch(fetchOrders());
+    const updatedOrder = await response.json();
+    dispatch(setOrders([updatedOrder]));  // update the Redux store with the updated order
   } else {
     throw new Error(`Failed to remove product: ${response.status}`);
   }
 };
+
 
 /* Reducer */
 export default function reducer(state = {}, action) {

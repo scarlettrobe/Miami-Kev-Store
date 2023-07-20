@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProductToOrder, removeProductFromOrder } from '../../store/order';
+import { addProductToOrder, removeProductFromOrder, fetchOrders } from '../../store/order';
 import { getProducts } from '../../store/product';
-
-
 
 const OrderItemActions = ({ orderId, orderItems }) => {
   const dispatch = useDispatch();
@@ -11,16 +9,19 @@ const OrderItemActions = ({ orderId, orderItems }) => {
 
   useEffect(() => {
     dispatch(getProducts());
+    dispatch(fetchOrders());
   }, [dispatch]);
 
-  const handleAddProduct = (orderId, event) => {
+  const handleAddProduct = async (orderId, event) => {
     const productId = event.target.value;
-    dispatch(addProductToOrder(orderId, productId));
+    await dispatch(addProductToOrder(orderId, productId, 1));
+    dispatch(fetchOrders());
   };
 
-  const handleRemoveProduct = (orderId, event) => {
+  const handleRemoveProduct = async (orderId, event) => {
     const productId = event.target.value;
-    dispatch(removeProductFromOrder(orderId, productId));
+    await dispatch(removeProductFromOrder(orderId, productId));
+    dispatch(fetchOrders());
   };
 
   return (
