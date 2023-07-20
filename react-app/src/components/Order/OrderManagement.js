@@ -4,11 +4,13 @@ import { fetchOrders, changeOrderStatus } from '../../store/order';
 import CustomerInfoModal from './CustomerInfoModal';
 import './order.css';
 import OrderItemActions from './OrderItemActions';
+import OrderForm from './OrderForm';
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
   const orders = useSelector(state => Object.values(state.order));
   const products = useSelector(state => Object.values(state.product));
+  const [showOrderForm, setShowOrderForm] = useState(false);
 
   useEffect(() => {
     dispatch(fetchOrders());
@@ -45,11 +47,14 @@ const OrderManagement = () => {
   return (
     <div className="order-management">
       <h1>Order Management</h1>
-      <button className="create-button">Create New Order</button>
+      <button className="create-button" onClick={() => setShowOrderForm(true)}>
+        Create New Order
+      </button>
       <button className="delete-button">Delete Selected Orders</button>
       {selectedCustomer && (
         <CustomerInfoModal customerName={selectedCustomer} onClose={closeCustomerModal} />
       )}
+      {showOrderForm && <OrderForm />}
       {orders.map(order => (
         <div key={order.id} className="order">
           <input
@@ -63,7 +68,11 @@ const OrderManagement = () => {
             </a>
           </p>
           <p>Total Price: {order.total_price}</p>
-          <select value={order.status} onChange={(event) => handleStatusChange(order.id, event)}>
+          <select
+            className="status-select"
+            value={order.status}
+            onChange={(event) => handleStatusChange(order.id, event)}
+          >
             <option value="pending_payment">Pending Payment</option>
             <option value="failed">Failed</option>
             <option value="processing">Processing</option>

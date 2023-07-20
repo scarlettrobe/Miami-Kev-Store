@@ -3,6 +3,7 @@ const SET_ORDERS = 'orders/SET_ORDERS';
 const UPDATE_ORDER_STATUS = 'orders/UPDATE_ORDER_STATUS';
 const ADD_PRODUCT_TO_ORDER = 'orders/ADD_PRODUCT_TO_ORDER';
 const REMOVE_PRODUCT_FROM_ORDER = 'orders/REMOVE_PRODUCT_FROM_ORDER';
+const MAKE_ORDER = 'orders/MAKE_ORDER';
 
 /* Action Creators */
 export const setOrders = (orders) => {
@@ -12,12 +13,18 @@ export const setOrders = (orders) => {
   };
 };
 
+export const makeOrder = (order) => {
+  return {
+    type: MAKE_ORDER,
+    payload: order
+  };
+};
 
 export const updateOrderStatus = (id, status) => {
-    return {
-        type: UPDATE_ORDER_STATUS,
-        payload: { id, status },
-    };
+  return {
+    type: UPDATE_ORDER_STATUS,
+    payload: { id, status },
+  };
 };
 
 export const addProductToOrderAction = (orderId, productId) => {
@@ -36,12 +43,12 @@ export const removeProductFromOrderAction = (orderId, productId) => {
 
 /* Thunks */
 export const fetchOrders = () => async (dispatch) => {
-    const response = await fetch('/api/orders');
-    if (response.ok) {
-        const orders = await response.json();
-        dispatch(setOrders(orders));
-        return orders;
-    }
+  const response = await fetch('/api/orders');
+  if (response.ok) {
+    const orders = await response.json();
+    dispatch(setOrders(orders));
+    return orders;
+  }
 };
 
 export const changeOrderStatus = (id, status) => async (dispatch) => {
@@ -64,9 +71,25 @@ export const changeOrderStatus = (id, status) => async (dispatch) => {
   }
 };
 
+export const createOrder = (order) => async (dispatch) => {
+  const response = await fetch('/api/orders', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(order),
+  });
 
+  if (response.ok) {  
+    const newOrder = await response.json();
+    dispatch(makeOrder(newOrder));
+    return newOrder;
+  } else {
+    // Dispatch error action or handle the error
+    throw new Error(`Failed to create order: ${response.status}`);
+  }
+};
 
-  
 
 export const addProductToOrder = (orderId, productId) => async (dispatch) => {
   const response = await fetch(`/api/orders/${orderId}/products/${productId}`, {
@@ -100,14 +123,12 @@ export const removeProductFromOrder = (orderId, productId) => async (dispatch) =
   }
 };
 
-
-
 /* Reducer */
 export default function reducer(state = {}, action) {
   switch (action.type) {
     case SET_ORDERS:
       return { ...state, ...action.payload.orders };
-    case UPDATE_ORDER_STATUS: {
+    case UPDATE_ORDER_STATUS:
       return {
         ...state,
         [action.payload.id]: {
@@ -115,14 +136,13 @@ export default function reducer(state = {}, action) {
           status: action.payload.status,
         },
       };
-    }
     case ADD_PRODUCT_TO_ORDER: {
       const { orderId, productId } = action.payload;
       return {
         ...state,
         [orderId]: {
           ...state[orderId],
-          order_items: [...state[orderId].order_items, { product_id: productId, quantity: 1 }],  // assuming quantity of 1 for new items
+          order_items: [...state[orderId].order_items, { product_id: productId, quantity: 1 }],
         },
       };
     }
@@ -136,8 +156,11 @@ export default function reducer(state = {}, action) {
         },
       };
     }
+    case MAKE_ORDER:
+      return { ...state, [action.payload.id]: action.payload };
     default:
       return state;
   }
 }
-      
+
+
