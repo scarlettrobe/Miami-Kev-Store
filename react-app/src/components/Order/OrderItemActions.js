@@ -1,9 +1,17 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { addProductToOrder, removeProductFromOrder } from '../../store/order';
+import { getProducts } from '../../store/product';
 
-const OrderItemActions = ({ orderId, products, orderItems }) => {
+
+
+const OrderItemActions = ({ orderId, orderItems }) => {
   const dispatch = useDispatch();
+  const products = useSelector(state => Object.values(state.product.products));
+
+  useEffect(() => {
+    dispatch(getProducts());
+  }, [dispatch]);
 
   const handleAddProduct = (orderId, event) => {
     const productId = event.target.value;

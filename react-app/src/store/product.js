@@ -1,5 +1,6 @@
 /* Action Types */
 const FETCH_PRODUCT = 'products/FetchProduct';
+const FETCH_PRODUCTS = 'products/FetchProducts';
 const MAKE_PRODUCT = 'products/MakeProduct';
 const EDIT_PRODUCT = 'products/EditProduct';
 const DELETE_PRODUCT = 'products/DeleteProduct';
@@ -13,6 +14,13 @@ export const fetchProduct = (product) => {
     return {
         type: FETCH_PRODUCT,
         payload: product,
+    };
+};
+
+export const fetchProducts = (products) => {
+    return {
+        type: FETCH_PRODUCTS,
+        payload: products,
     };
 };
 
@@ -46,6 +54,18 @@ export const getProduct = (id) => async (dispatch) => {
         return product;
     }
 };
+
+/* Thunks */
+export const getProducts = () => async (dispatch) => {
+    const response = await fetch(`/api/products`);
+    if (response.ok) {
+        const data = await response.json();
+        const products = data.products;  // extract products from data
+        dispatch(fetchProducts(products));
+        return products;
+    }
+};
+
 
 export const createProduct = (product) => async (dispatch) => {
     const { images, ...otherProductDetails } = product;
@@ -120,6 +140,13 @@ export default function reducer(state = initialState, action) {
         case FETCH_PRODUCT:
             newState = Object.assign({}, state);
             newState.products[action.payload.id] = action.payload;
+            return newState;
+        case FETCH_PRODUCTS:
+            newState = Object.assign({}, state);
+            newState.products = action.payload.reduce((acc, product) => {
+                acc[product.id] = product;
+                return acc;
+            }, {});
             return newState;
         case MAKE_PRODUCT:
             newState = Object.assign({}, state);
