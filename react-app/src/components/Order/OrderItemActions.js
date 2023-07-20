@@ -13,10 +13,14 @@ const OrderItemActions = ({ orderId, orderItems }) => {
   }, [dispatch]);
 
   const handleAddProduct = async (orderId, event) => {
-    const productId = event.target.value;
-    await dispatch(addProductToOrder(orderId, productId, 1));
-    dispatch(fetchOrders());
-  };
+    try {
+        const productId = event.target.value;
+        await dispatch(addProductToOrder(orderId, productId, 1));
+        dispatch(fetchOrders());
+    } catch (err) {
+        console.error(err);
+    }
+};
 
   const handleRemoveProduct = async (orderId, event) => {
     const productId = event.target.value;

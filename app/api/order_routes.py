@@ -135,7 +135,7 @@ def add_product_to_order(orderId, productId):
 
         return order.to_dict()  # return the updated order
     else:
-        return {'errors': ['Order or Product not found']}, 404
+        return jsonify(order.to_dict()), 200
 
 
 
@@ -150,4 +150,4 @@ def remove_product_from_order(orderId, productId):
         db.session.commit()
         return order.to_dict()  # return the updated order
     else:
-        return {'errors': ['Order or OrderItem not found']}, 404
+        return jsonify(order.to_dict()), 200

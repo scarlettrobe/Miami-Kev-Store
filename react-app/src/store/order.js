@@ -6,11 +6,12 @@ const REMOVE_PRODUCT_FROM_ORDER = 'orders/REMOVE_PRODUCT_FROM_ORDER';
 
 /* Action Creators */
 export const setOrders = (orders) => {
-    return {
-        type: SET_ORDERS,
-        payload: orders,
-    };
+  return {
+    type: SET_ORDERS,
+    payload: orders
+  };
 };
+
 
 export const updateOrderStatus = (id, status) => {
     return {
@@ -22,7 +23,7 @@ export const updateOrderStatus = (id, status) => {
 export const addProductToOrderAction = (orderId, productId) => {
   return {
     type: ADD_PRODUCT_TO_ORDER,
-    payload: { orderId, productId },
+    payload: { orderId, productId, quantity: 1 },
   };
 };
 
@@ -67,23 +68,24 @@ export const changeOrderStatus = (id, status) => async (dispatch) => {
 
   
 
-export const addProductToOrder = (orderId, productId, quantity) => async (dispatch) => {
+export const addProductToOrder = (orderId, productId) => async (dispatch) => {
   const response = await fetch(`/api/orders/${orderId}/products/${productId}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ quantity }),  // quantity is always 1
+    body: JSON.stringify({
+      quantity: 1,
+    }), // assuming quantity of 1 for new items
   });
 
   if (response.ok) {
     const updatedOrder = await response.json();
-    dispatch(setOrders([updatedOrder]));  // update the Redux store with the updated order
+    dispatch(setOrders(updatedOrder));
   } else {
     throw new Error(`Failed to add product: ${response.status}`);
   }
 };
-
 
 export const removeProductFromOrder = (orderId, productId) => async (dispatch) => {
   const response = await fetch(`/api/orders/${orderId}/products/${productId}`, {
@@ -92,26 +94,19 @@ export const removeProductFromOrder = (orderId, productId) => async (dispatch) =
 
   if (response.ok) {
     const updatedOrder = await response.json();
-    dispatch(setOrders([updatedOrder]));  // update the Redux store with the updated order
+    dispatch(setOrders(updatedOrder));
   } else {
     throw new Error(`Failed to remove product: ${response.status}`);
   }
 };
 
 
+
 /* Reducer */
 export default function reducer(state = {}, action) {
   switch (action.type) {
-    case SET_ORDERS: {
-      const allOrders = {};
-      action.payload.orders.forEach((order) => {
-        allOrders[order.id] = order;
-      });
-      return {
-        ...state,
-        ...allOrders,
-      };
-    }
+    case SET_ORDERS:
+      return { ...state, ...action.payload.orders };
     case UPDATE_ORDER_STATUS: {
       return {
         ...state,
@@ -145,3 +140,4 @@ export default function reducer(state = {}, action) {
       return state;
   }
 }
+      
