@@ -14,7 +14,7 @@ function ProductList() {
         return response.json();
       })
       .then(data => {
-        setProducts(data.products); // Use "data.products" to access the products array
+        setProducts(data.products);
       })
       .catch(error => console.error('Error:', error));
   }, []);
@@ -26,9 +26,9 @@ function ProductList() {
         {products.map(product => (
           <div key={product.id} className="product">
             <div className='productImages'>
-              {product.images.length > 0 && 
+              {product.images && product.images.length > 0 && (
                 <img src={product.images[0].image_url} alt={`${product.name} 0`} />
-              }
+              )}
             </div>
             <Link to={`/products/${product.id}`}>
               <h2>{product.name}</h2>
@@ -43,3 +43,4 @@ function ProductList() {
 }
 
 export default ProductList;
+

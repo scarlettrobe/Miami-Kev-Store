@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchOrders, changeOrderStatus, addProductToOrder, removeProductFromOrder } from '../../store/order';
+import { fetchOrders, changeOrderStatus } from '../../store/order';
 import CustomerInfoModal from './CustomerInfoModal';
 import './order.css';
+import OrderItemActions from './OrderItemActions';
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -16,7 +17,6 @@ const OrderManagement = () => {
   useEffect(() => {
     console.log('Orders updated:', orders);
   }, [orders]);
-  
 
   const handleStatusChange = (id, event) => {
     const newStatus = event.target.value;
@@ -24,21 +24,10 @@ const OrderManagement = () => {
     console.log(`New Status: ${newStatus}`);
     dispatch(changeOrderStatus(id, newStatus));
   };
-  
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const openCustomerModal = (customerName) => {
     setSelectedCustomer(customerName);
-  };
-
-  const handleAddProduct = (orderId, event) => {
-    const productId = event.target.value;
-    dispatch(addProductToOrder(orderId, productId));
-  };
-  
-  const handleRemoveProduct = (orderId, event) => {
-    const productId = event.target.value;
-    dispatch(removeProductFromOrder(orderId, productId));
   };
 
   const closeCustomerModal = () => {
@@ -63,13 +52,15 @@ const OrderManagement = () => {
       )}
       {orders.map(order => (
         <div key={order.id} className="order">
-          <input 
-            type="checkbox" 
-            checked={checkedOrders[order.id] || false} 
+          <input
+            type="checkbox"
+            checked={checkedOrders[order.id] || false}
             onChange={() => handleCheckChange(order.id)}
           />
           <p>
-            <a href="#" onClick={() => openCustomerModal(order.customer_name)}>Customer Name: {order.customer_name}</a>
+            <a href="#" onClick={() => openCustomerModal(order.customer_name)}>
+              Customer Name: {order.customer_name}
+            </a>
           </p>
           <p>Total Price: {order.total_price}</p>
           <select value={order.status} onChange={(event) => handleStatusChange(order.id, event)}>
@@ -90,24 +81,7 @@ const OrderManagement = () => {
               </div>
             ))}
           </div>
-          <div>
-            <select onChange={(event) => handleAddProduct(order.id, event)} className="dropdown">
-              <option value="">Add Product...</option>
-              {products.map((product, index) => (
-                <option key={index} value={product.id}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
-            <select onChange={(event) => handleRemoveProduct(order.id, event)} className="dropdown">
-              <option value="">Remove Product...</option>
-              {order.order_items.map((item, index) => (
-                <option key={index} value={item.product_id}>
-                  {item.product_name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <OrderItemActions orderId={order.id} products={products} orderItems={order.order_items} />
         </div>
       ))}
     </div>
