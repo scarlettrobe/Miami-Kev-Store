@@ -13,7 +13,6 @@ from app.models import Product, ProductImage, OrderItem, Order, db
 product_routes = Blueprint('products', __name__)
 
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 @product_routes.route('', methods=['GET'])
 def get_products():
