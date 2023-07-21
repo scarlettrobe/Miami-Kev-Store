@@ -102,6 +102,28 @@ def delete_order(id):
     else:
         return {'errors': ['Order not found']}, 404
 
+
+@order_routes.route('/<int:orderId>/products', methods=['DELETE'])
+@login_required
+def delete_order_items(orderId):
+    try:
+        order = Order.query.get(orderId)
+        if not order:
+            return jsonify({'error': 'Order not found'}), 404
+
+        # Delete order items associated with the order
+        order_items = OrderItem.query.filter_by(order_id=orderId).all()
+        for item in order_items:
+            db.session.delete(item)
+
+        db.session.commit()
+        return jsonify({'message': 'Order items deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Failed to delete order items'}), 500
+
+
+
 @order_routes.route('/<int:orderId>/products/<int:productId>', methods=['POST'])
 @login_required
 def add_product_to_order(orderId, productId):

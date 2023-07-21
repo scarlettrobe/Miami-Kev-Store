@@ -4,7 +4,6 @@ const UPDATE_ORDER_STATUS = 'orders/UPDATE_ORDER_STATUS';
 const ADD_PRODUCT_TO_ORDER = 'orders/ADD_PRODUCT_TO_ORDER';
 const REMOVE_PRODUCT_FROM_ORDER = 'orders/REMOVE_PRODUCT_FROM_ORDER';
 const MAKE_ORDER = 'orders/MAKE_ORDER';
-const DELETE_ORDER = 'orders/DELETE_ORDER';
 
 /* Action Creators */
 export const setOrders = (orders) => {
@@ -42,45 +41,7 @@ export const removeProductFromOrderAction = (orderId, productId) => {
   };
 };
 
-export const deleteOrderAction = (id) => {
-  return {
-    type: DELETE_ORDER,
-    payload: id,
-  };
-};
-
-/* Thunk */
-export const deleteOrder = (orderId) => async (dispatch) => {
-  try {
-    // First, delete associated order items
-    await deleteOrderItems(orderId);
-    // Then, delete the order
-    const response = await fetch(`/api/orders/${orderId}`, {
-      method: 'DELETE',
-    });
-
-    if (response.ok) {
-      const deletedOrder = await response.json();
-      // Dispatch an action to remove the deleted order from the state
-      dispatch(deleteOrderAction(orderId));
-    } else {
-      throw new Error(`Failed to delete order: ${response.status}`);
-    }
-  } catch (error) {
-    console.error('Error deleting order:', error);
-  }
-};
-
-const deleteOrderItems = async (orderId) => {
-  const response = await fetch(`/api/orders/${orderId}/products`, {
-    method: 'DELETE',
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to delete order items: ${response.status}`);
-  }
-};
-
+/* Thunks */
 export const fetchOrders = () => async (dispatch) => {
   const response = await fetch('/api/orders');
   if (response.ok) {
@@ -195,15 +156,11 @@ export default function reducer(state = {}, action) {
         },
       };
     }
-    case DELETE_ORDER: {
-      const newState = { ...state };
-      delete newState[action.payload];
-      return newState;
-    }
-    
     case MAKE_ORDER:
       return { ...state, [action.payload.id]: action.payload };
     default:
       return state;
   }
 }
+
+

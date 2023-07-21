@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchOrders, changeOrderStatus } from '../../store/order';
-import CustomerInfoModal from './CustomerInfoModal';
+import { fetchOrders, changeOrderStatus, deleteOrder } from '../../store/order';
 import './order.css';
 import OrderItemActions from './OrderItemActions';
-import OrderForm from './OrderForm';
+import DeleteOrder from './DeleteOrder'; // Import the new DeleteOrder component
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
   const orders = useSelector(state => Object.values(state.order));
   const products = useSelector(state => Object.values(state.product));
-  const [showOrderForm, setShowOrderForm] = useState(false);
 
-  useEffect(() => {
-    dispatch(fetchOrders());
-  }, [dispatch]);
+useEffect(() => {
+  dispatch(fetchOrders());
+}, [dispatch]);
 
-  useEffect(() => {
-    console.log('Orders updated:', orders);
-  }, [orders]);
+
+  const [selectedOrders, setSelectedOrders] = useState({});
 
   const handleStatusChange = (id, event) => {
     const newStatus = event.target.value;
@@ -27,45 +24,40 @@ const OrderManagement = () => {
     dispatch(changeOrderStatus(id, newStatus));
   };
 
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const openCustomerModal = (customerName) => {
-    setSelectedCustomer(customerName);
-  };
-
-  const closeCustomerModal = () => {
-    setSelectedCustomer(null);
-  };
-
-  // new state for checkboxes
-  const [checkedOrders, setCheckedOrders] = useState({});
-
-  // handle check change
   const handleCheckChange = (orderId) => {
-    setCheckedOrders({ ...checkedOrders, [orderId]: !checkedOrders[orderId] });
+    setSelectedOrders(prevState => ({
+      ...prevState,
+      [orderId]: !prevState[orderId]
+    }));
   };
+
+  const handleDeleteSelected = async () => {
+    const selectedOrderIds = Object.keys(selectedOrders).filter((orderId) => selectedOrders[orderId]);
+    console.log('Selected Order IDs:', selectedOrderIds);
+    for (const orderId of selectedOrderIds) {
+      await dispatch(deleteOrder(orderId));
+    }
+    dispatch(fetchOrders());
+  };
+  
 
   return (
     <div className="order-management">
       <h1>Order Management</h1>
-      <button className="create-button" onClick={() => setShowOrderForm(true)}>
-        Create New Order
+
+      <button className="delete-button" onClick={handleDeleteSelected}>
+        Delete Selected Orders
       </button>
-      <button className="delete-button">Delete Selected Orders</button>
-      {selectedCustomer && (
-        <CustomerInfoModal customerName={selectedCustomer} onClose={closeCustomerModal} />
-      )}
-      {showOrderForm && <OrderForm />}
+
       {orders.map(order => (
         <div key={order.id} className="order">
           <input
             type="checkbox"
-            checked={checkedOrders[order.id] || false}
+            checked={selectedOrders[order.id] || false}
             onChange={() => handleCheckChange(order.id)}
           />
           <p>
-            <a href="#" onClick={() => openCustomerModal(order.customer_name)}>
-              Customer Name: {order.customer_name}
-            </a>
+            Customer Name: {order.customer_name}
           </p>
           <p>Total Price: {order.total_price}</p>
           <select
@@ -91,6 +83,7 @@ const OrderManagement = () => {
             ))}
           </div>
           <OrderItemActions orderId={order.id} products={products} orderItems={order.order_items} />
+          <DeleteOrder orderId={order.id} />
         </div>
       ))}
     </div>

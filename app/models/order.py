@@ -18,7 +18,7 @@ class Order(db.Model):
 
     # Updated relationship
     user = db.relationship('User', back_populates='orders')
-    order_items = db.relationship('OrderItem', back_populates='order')
+    order_items = db.relationship('OrderItem', back_populates='order', cascade="all, delete-orphan")
 
     def to_dict(self):
         return {
