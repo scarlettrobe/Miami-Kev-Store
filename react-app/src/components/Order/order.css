@@ -120,7 +120,6 @@ a{
     margin-bottom: 0;
   }
 
-  /* Add box styles for order items */
 .order-management .order .order-items div:hover {
     border: 2px solid #FFC107; 
     border-radius: 4px;

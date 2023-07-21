@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { createBlogPost, editBlogPost } from '../../store/blog';
+import './blog.css';
 
 function BlogPostForm({ post, setEditing }) {
     const dispatch = useDispatch();
@@ -39,25 +40,28 @@ function BlogPostForm({ post, setEditing }) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
+        <form className="blog-form" onSubmit={handleSubmit}>
+            <label className="blog-label">
                 Title
                 <input
                     type="text"
+                    className="blog-input"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
                 />
             </label>
-            <label>
+            <label className="blog-label">
                 Content
                 <textarea
+                    className="blog-textarea"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     required
                 />
             </label>
-            <button type="submit">{post ? 'Update' : 'Create'}</button>
+            <button className="button2" type="submit">{post ? 'Update' : 'Create'}</button>
+
         </form>
     );
 }

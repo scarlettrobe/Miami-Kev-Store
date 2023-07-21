@@ -22,20 +22,24 @@ function BlogPosts() {
     }
 
     return (
+        <div className="blog-container">
         <div>
             {blogPosts.map(post => (
                 <div key={post.id}>
-                    <h2>{post.title}</h2>
-                    <p>{post.content}</p>
-                    <button onClick={() => handleDelete(post.id)}>Delete</button>
-                    <button onClick={() => handleEdit(post.id)}>Edit</button>
+                    <h2 className="blog-post-title">{post.title}</h2>
+                    <p className="blog-post-content">{post.content}</p>
+                    <button className='button' onClick={() => handleDelete(post.id)}>Delete</button>
+                    <button className='button' onClick={() => handleEdit(post.id)}>Edit</button>
+
                     {editing === post.id && <BlogPostForm post={post} setEditing={setEditing} />}
                 </div>
             ))}
-            <h2>Create New Blog Post</h2>
+            <h2 className="blog-h2">Create New Blog Post</h2>
             <BlogPostForm setEditing={setEditing} />
         </div>
+        </div>
     );
+
 }
 
 export default BlogPosts;

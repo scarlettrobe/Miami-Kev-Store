@@ -5,7 +5,9 @@
     background: #333;
     color: white;
     padding: 10px;
+    z-index: 99999;
   }
+
 
   .sidebar ul {
     display: flex;
