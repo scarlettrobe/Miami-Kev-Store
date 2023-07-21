@@ -34,6 +34,7 @@ function Sidebar() {
             <li><Link to="/" onClick={(e) => closeSidebarAndNavigate(e, "/")}>Order Management</Link></li>
             <li><Link to="/products" onClick={(e) => closeSidebarAndNavigate(e, "/products")}>View Products</Link></li>
             <li><Link to="/create-product" onClick={(e) => closeSidebarAndNavigate(e, "/create-product")}>Create Product</Link></li>
+            <li><Link to="/create-blog-post" onClick={(e) => closeSidebarAndNavigate(e, "/create-blog-post")}>Create Blog Post</Link></li>
           </ul>
         </div>
       )}

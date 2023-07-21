@@ -170,6 +170,6 @@ def remove_product_from_order(orderId, productId):
     if order and order_item:
         db.session.delete(order_item)
         db.session.commit()
-        return order.to_dict()  # return the updated order
+        return order.to_dict() 
     else:
         return jsonify(order.to_dict()), 200

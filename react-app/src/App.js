@@ -13,6 +13,8 @@ import Navigation from "./components/Navigation";
 import Sidebar from "./components/SideNavBar/Sidebar";
 import OrderManagement from "./components/Order/OrderManagement";
 
+import BlogPosts from './components/blog/BlogPosts';
+
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -44,6 +46,9 @@ function App() {
           </Route>
           <Route path="/create-product">
             <ProductCreate />
+          </Route>
+          <Route path="/create-blog-post">
+            <BlogPosts />
           </Route>
         </Switch>
       )}

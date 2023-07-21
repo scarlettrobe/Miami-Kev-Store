@@ -60,14 +60,13 @@ export const deleteOrder = (orderId) => async (dispatch) => {
     });
 
     if (response.ok) {
-      const deletedOrder = await response.json();
-      // Dispatch an action to remove the deleted order from the state
       dispatch(deleteOrderAction(orderId));
     } else {
       throw new Error(`Failed to delete order: ${response.status}`);
     }
   } catch (error) {
     console.error('Error deleting order:', error);
+    throw error;
   }
 };
 
