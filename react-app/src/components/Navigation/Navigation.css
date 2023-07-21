@@ -72,3 +72,85 @@ ul {
   padding: 15px ;
   font-size: 50px; 
 }
+
+
+/* Add these styles to your existing CSS */
+
+/* Header */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #111111;
+  padding: 10px 20px;
+}
+
+/* Logo */
+#logo img {
+  width: 40px;
+  height: 40px;
+}
+
+/* Navigation Links */
+ul.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+ul.nav-links li {
+  margin-left: 20px;
+}
+
+ul.nav-links li a {
+  color: #bfbfbf;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+ul.nav-links li a:hover {
+  color: #fff;
+}
+
+/* Profile Dropdown */
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-dropdown ul {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #111111;
+  border: 1px solid #bfbfbf;
+  border-radius: 5px;
+  display: none;
+}
+
+.profile-dropdown.active ul {
+  display: block;
+}
+
+.profile-dropdown ul li {
+  padding: 10px;
+}
+
+.profile-dropdown ul li a {
+  color: #bfbfbf;
+  text-decoration: none;
+  display: block;
+}
+
+.profile-dropdown ul li a:hover {
+  background-color: #333333;
+}
+
+/* Body */
+main {
+  padding: 20px;
+}
+
+/* Sample Text with Custom Font Size and Color */
+.sample-text {
+  font-size: 24px;
+  color: #bfbfbf;
+}
