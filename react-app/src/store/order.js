@@ -165,43 +165,63 @@ export const removeProductFromOrder = (orderId, productId) => async (dispatch) =
 export default function reducer(state = {}, action) {
   switch (action.type) {
     case SET_ORDERS:
-      return { ...state, ...action.payload.orders };
+      const ordersObject = action.payload.orders.reduce((obj, order) => {
+        obj[order.id] = order;
+        return obj;
+      }, {});
+      return ordersObject;
+
     case UPDATE_ORDER_STATUS:
-      return {
-        ...state,
-        [action.payload.id]: {
-          ...state[action.payload.id],
-          status: action.payload.status,
-        },
-      };
+
+      if (state[action.payload.id]) {
+        return {
+          ...state,
+          [action.payload.id]: {
+            ...state[action.payload.id],
+            status: action.payload.status,
+          },
+        };
+      }
+      return state;
+
     case ADD_PRODUCT_TO_ORDER: {
       const { orderId, productId } = action.payload;
-      return {
-        ...state,
-        [orderId]: {
-          ...state[orderId],
-          order_items: [...state[orderId].order_items, { product_id: productId, quantity: 1 }],
-        },
-      };
+      if (state[orderId]) {
+        return {
+          ...state,
+          [orderId]: {
+            ...state[orderId],
+            order_items: [...state[orderId].order_items, { product_id: productId, quantity: 1 }],
+          },
+        };
+      }
+      return state;
     }
+
     case REMOVE_PRODUCT_FROM_ORDER: {
       const { orderId, productId } = action.payload;
-      return {
-        ...state,
-        [orderId]: {
-          ...state[orderId],
-          order_items: state[orderId].order_items.filter(item => item.product_id !== productId),
-        },
-      };
+      if (state[orderId]) {
+        return {
+          ...state,
+          [orderId]: {
+            ...state[orderId],
+            order_items: state[orderId].order_items.filter(item => item.product_id !== productId),
+          },
+        };
+      }
+      return state;
     }
+
     case DELETE_ORDER: {
       const newState = { ...state };
       delete newState[action.payload];
       return newState;
     }
-    
-    case MAKE_ORDER:
+
+    case MAKE_ORDER: {
       return { ...state, [action.payload.id]: action.payload };
+    }
+
     default:
       return state;
   }
