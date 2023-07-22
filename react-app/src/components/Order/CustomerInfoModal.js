@@ -1,3 +1,7 @@
+import React from "react";
+import "./order.css";
+
+
 const CustomerInfoModal = ({customerName, onClose}) => {
     return (
       <div className="modal-overlay">

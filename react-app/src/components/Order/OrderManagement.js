@@ -3,19 +3,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders, changeOrderStatus, deleteOrder } from '../../store/order';
 import './order.css';
 import OrderItemActions from './OrderItemActions';
-import DeleteOrder from './DeleteOrder'; // Import the new DeleteOrder component
+import DeleteOrder from './DeleteOrder'; 
+import CustomerInfoModal from './CustomerInfoModal'; // Import the CustomerInfoModal
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
   const orders = useSelector(state => Object.values(state.order));
   const products = useSelector(state => Object.values(state.product));
 
-useEffect(() => {
-  dispatch(fetchOrders());
-}, [dispatch]);
-
+  useEffect(() => {
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
   const [selectedOrders, setSelectedOrders] = useState({});
+  const [showModal, setShowModal] = useState(false); // This state will control the visibility of the modal
+  const [customerName, setCustomerName] = useState(''); // This state will store the name of the customer for the modal
 
   const handleStatusChange = (id, event) => {
     const newStatus = event.target.value;
@@ -39,7 +41,6 @@ useEffect(() => {
     }
     dispatch(fetchOrders());
   };
-  
 
   return (
     <div className="order-management">
@@ -56,10 +57,13 @@ useEffect(() => {
             checked={selectedOrders[order.id] || false}
             onChange={() => handleCheckChange(order.id)}
           />
-          <p>
+
+          <p onClick={() => {setShowModal(true); setCustomerName(order.customer_name);}}>
             Customer Name: {order.customer_name}
           </p>
+
           <p>Total Price: {order.total_price}</p>
+          
           <select
             className="status-select"
             value={order.status}
@@ -73,6 +77,7 @@ useEffect(() => {
             <option value="cancelled">Cancelled</option>
             <option value="refunded">Refunded</option>
           </select>
+
           <div className="order-items">
             <p>Order Items:</p>
             {order.order_items.map((item, index) => (
@@ -82,8 +87,14 @@ useEffect(() => {
               </div>
             ))}
           </div>
+
           <OrderItemActions orderId={order.id} products={products} orderItems={order.order_items} />
           <DeleteOrder orderId={order.id} />
+
+          {showModal && customerName === order.customer_name && (
+            <CustomerInfoModal customerName={customerName} onClose={() => setShowModal(false)} />
+          )}
+
         </div>
       ))}
     </div>
