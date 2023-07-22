@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders, changeOrderStatus, deleteOrder } from '../../store/order';
 import './order.css';
 import OrderItemActions from './OrderItemActions';
-import DeleteOrder from './DeleteOrder'; 
-import CustomerInfoModal from './CustomerInfoModal'; // Import the CustomerInfoModal
+import DeleteOrder from './DeleteOrder';
+import CustomerInfoModal from './CustomerInfoModal';
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const OrderManagement = () => {
 
   const [selectedOrders, setSelectedOrders] = useState({});
   const [showModal, setShowModal] = useState(false); // This state will control the visibility of the modal
-  const [customerName, setCustomerName] = useState(''); // This state will store the name of the customer for the modal
+  const [clickedCustomerName, setClickedCustomerName] = useState(''); // This state will store the name of the customer for the modal
 
   const handleStatusChange = (id, event) => {
     const newStatus = event.target.value;
@@ -58,12 +58,19 @@ const OrderManagement = () => {
             onChange={() => handleCheckChange(order.id)}
           />
 
-          <p onClick={() => {setShowModal(true); setCustomerName(order.customer_name);}}>
+          {/* Add onClick event to show the modal when the customer name is clicked */}
+          <p
+            className="customer-name" // Add the "customer-name" class here
+            onClick={() => {
+              setShowModal(true);
+              setClickedCustomerName(order.customer_name);
+            }}
+          >
             Customer Name: {order.customer_name}
           </p>
 
           <p>Total Price: {order.total_price}</p>
-          
+
           <select
             className="status-select"
             value={order.status}
@@ -91,8 +98,11 @@ const OrderManagement = () => {
           <OrderItemActions orderId={order.id} products={products} orderItems={order.order_items} />
           <DeleteOrder orderId={order.id} />
 
-          {showModal && customerName === order.customer_name && (
-            <CustomerInfoModal customerName={customerName} onClose={() => setShowModal(false)} />
+          {showModal && clickedCustomerName === order.customer_name && (
+            <CustomerInfoModal
+              customerName={clickedCustomerName}
+              onClose={() => setShowModal(false)}
+            />
           )}
 
         </div>
