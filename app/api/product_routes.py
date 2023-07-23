@@ -1,7 +1,7 @@
 
 from flask import Blueprint, jsonify, request
 from app.forms.ProductForm import ProductForm
-from app.api.aws import upload_file_to_s3, get_unique_filename, remove_file_from_s3
+from app.api.aws import upload_file_to_s3, get_unique_filename, remove_file_from_s3, ALLOWED_EXTENSIONS
 from app.models import Product, ProductImage, db
 from app.api.auth_routes import validation_errors_to_error_messages
 from app.models import Product, ProductImage, OrderItem, Order, db
@@ -14,13 +14,24 @@ product_routes = Blueprint('products', __name__)
 
 
 
+from flask import current_app  # Import current_app
+
 @product_routes.route('', methods=['GET'])
 def get_products():
-    products = Product.query.filter_by(is_available=True).all()
-    product_list = []
-    for product in products:
-        product_list.append(product.to_dict())
-    return {'products': product_list}
+    try:
+        products = Product.query.filter_by(is_available=True).all()
+        product_list = []
+        for product in products:
+            product_list.append(product.to_dict())
+
+        # Log the number of products retrieved
+        current_app.logger.info(f"Number of products retrieved: {len(product_list)}")
+
+        return {'products': product_list}
+    except Exception as e:
+        # Log any exceptions that occur during the process
+        current_app.logger.error(f"Error occurred while fetching products: {str(e)}")
+        return {'error': 'An error occurred while fetching products'}, 500
 
 
 

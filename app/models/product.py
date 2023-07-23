@@ -22,8 +22,10 @@ class Product(db.Model):
             'name': self.name,
             'description': self.description,
             'price': self.price,
-            'order_items': [order_item.to_dict() for order_item in self.order_items]
+            'order_items': [order_item.to_dict() for order_item in self.order_items],
+            'images': [image.to_dict() for image in self.images]  # Include this line
         }
+
 
 
 class ProductImage(db.Model):

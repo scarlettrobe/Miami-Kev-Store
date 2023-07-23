@@ -4,6 +4,7 @@ import './ProductList.css';
 
 function ProductList() {
   const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetch('/api/products')
@@ -15,19 +16,31 @@ function ProductList() {
       })
       .then(data => {
         setProducts(data.products);
+        setError(null); // Clear any previous error on successful response
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+        setError(error.message); // Set the error state if there is an issue
+        console.error('Error:', error);
+      });
   }, []);
 
   return (
     <div>
       <h1>All Products</h1>
+      {error && <p>Error: {error}</p>}
       <div className="product-row">
         {products.map(product => (
           <div key={product.id} className="product">
             <div className='productImages'>
-              {product.images && product.images.length > 0 && (
-                <img src={product.images[0].image_url} alt={`${product.name} 0`} />
+              {product.images && product.images.length > 0 ? (
+                <img
+                  src={product.images[0].image_url}
+                  alt={`${product.name} 0`}
+                  onError={() => setError(`Error loading image for ${product.name}`)}
+                  onLoad={() => console.log(`Image loaded successfully for ${product.name}`)}
+                />
+              ) : (
+                <p>No image available</p>
               )}
             </div>
             <Link to={`/products/${product.id}`}>
@@ -43,4 +56,3 @@ function ProductList() {
 }
 
 export default ProductList;
-
