@@ -1,8 +1,150 @@
-.productlist{
-    width: 300px;
-    height: 300px;
-}
-#productlist{
+
+.product-details {
+    width: 80%; 
+    margin: auto;
+    background: #9e1101;
+    padding: 30px; 
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(58, 24, 249, 0.1);
+    min-height: 200px;  /* Switched from height to min-height */
+    display: flex;  /* Added to allow the container to grow with its contents */
+    flex-direction: column;  /* Stack contents vertically */
+  }
+  
+  
+  .product-title {
+    color: #fafdff;
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px #750ff1;
+  }
+  
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .product-container {
+    border: 5px dashed #F1C40F;
+    padding: 20px;
+    background: #FCF3CF;
+    border-radius: 20px;
+    min-height: 200px; 
+    box-sizing: border-box;
+  }
+  
+  .product-name {
+    color: #21618C;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  
+  .product-name:hover {
+    color: #1A5276;
+  }
+  
+  .product-description, .product-price {
+    color: #17202A;
+    font-size: 1.2em;
+    cursor: pointer;
+  }
+  
+  .product-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));  /* Increased from 120px to 200px */
+    gap: 20px;  /* Increased from 10px to 20px for more spacing */
+    margin-top: 20px;
+    justify-items: center;
+    align-items: center;
     width: 100%;
-    display: block;
-}
+    position: relative;  /* Added this line */
+  }
+  
+  .product-images img::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+  }
+  
+  
+  .product-images img {
+    width: 100%;
+    max-width: 200px; /* Increased from 100px to 180px */
+    height: auto; 
+    transition: transform 0.3s;
+    box-shadow: 0 0 10px rgba(9, 125, 154, 0.2);
+    border: 3px solid #e4150a; 
+    background-color: white;
+    border-radius: 10px; 
+    }
+  
+  
+  .product-images img:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+    z-index: 1;
+    box-shadow: 0 0 20px rgba(174, 102, 102, 0.4); 
+  }
+  
+
+
+  .product-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .btn-save, .btn-delete {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .btn-save {
+    background: #28B463;
+    color: #FCF3CF;
+  }
+  
+  .btn-save:hover {
+    background: #1D8348;
+    color: #F1C40F;
+  }
+  
+  .btn-delete {
+    background: #911204;
+    color: #FCF3CF;
+  }
+  
+  .btn-delete:hover {
+    background: #c51404;
+    color: #F1C40F;
+  }
+  
+
+  .product-images input[type="file"] {
+    display: none;  /* Hide the default input */
+  }
+  
+  .product-images label {
+    padding: 10px 20px;
+    background: #28B463;  /* Use same background as .btn-save */
+    color: #FCF3CF;  /* Use same color as .btn-save */
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .product-images label:hover {
+    background: #1D8348;
+    color: #F1C40F;
+  }
+  

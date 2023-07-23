@@ -27,7 +27,6 @@ function ProductList() {
   return (
     <div>
       <h1>All Products</h1>
-      {error && <p>Error: {error}</p>}
       <div className="product-row">
         {products.map(product => (
           <div key={product.id} className="product">
