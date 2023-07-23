@@ -53,6 +53,7 @@ def create_product():
                 if image_file.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
                     image_file.filename = get_unique_filename(image_file.filename)
                     response = upload_file_to_s3(image_file)
+                    print(response)  # print the response
                     if "errors" not in response:
                         image = ProductImage(
                             product_id=product.id,
@@ -62,6 +63,7 @@ def create_product():
             db.session.commit()
         return product.to_dict()
     return {'errors': validation_errors_to_error_messages(form.errors)}, 400
+
 
 
 @product_routes.route('/<int:id>', methods=['GET'])
