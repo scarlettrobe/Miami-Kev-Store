@@ -5,6 +5,7 @@ import './order.css';
 import OrderItemActions from './OrderItemActions';
 import DeleteOrder from './DeleteOrder';
 import CustomerInfoModal from './CustomerInfoModal';
+import DeleteSelectModal from './DeleteSelectedOrder';
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -16,8 +17,9 @@ const OrderManagement = () => {
   }, [dispatch]);
 
   const [selectedOrders, setSelectedOrders] = useState({});
-  const [showModal, setShowModal] = useState(false); // This state will control the visibility of the modal
-  const [clickedCustomerName, setClickedCustomerName] = useState(''); // This state will store the name of the customer for the modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // State to control the visibility of the DeleteSelectModal
+  const [showCustomerModal, setShowCustomerModal] = useState(false); // State to control the visibility of the CustomerInfoModal
+  const [clickedCustomerName, setClickedCustomerName] = useState('');
 
   const handleStatusChange = (id, event) => {
     const newStatus = event.target.value;
@@ -35,18 +37,18 @@ const OrderManagement = () => {
 
   const handleDeleteSelected = async () => {
     const selectedOrderIds = Object.keys(selectedOrders).filter((orderId) => selectedOrders[orderId]);
-    console.log('Selected Order IDs:', selectedOrderIds);
-    for (const orderId of selectedOrderIds) {
-      await dispatch(deleteOrder(orderId));
-    }
-    dispatch(fetchOrders());
+      for (const orderId of selectedOrderIds) {
+        await dispatch(deleteOrder(orderId));
+      }
+      dispatch(fetchOrders());
+  
   };
 
   return (
     <div className="order-management">
       <h1>Order Management</h1>
 
-      <button className="delete-button" onClick={handleDeleteSelected}>
+      <button className="delete-button" onClick={() => setShowDeleteModal(true)}>
         Delete Selected Orders
       </button>
 
@@ -58,11 +60,10 @@ const OrderManagement = () => {
             onChange={() => handleCheckChange(order.id)}
           />
 
-          {/* Add onClick event to show the modal when the customer name is clicked */}
           <p
-            className="customer-name" // Add the "customer-name" class here
+            className="customer-name"
             onClick={() => {
-              setShowModal(true);
+              setShowCustomerModal(true);
               setClickedCustomerName(order.customer_name);
             }}
           >
@@ -98,15 +99,31 @@ const OrderManagement = () => {
           <OrderItemActions orderId={order.id} products={products} orderItems={order.order_items} />
           <DeleteOrder orderId={order.id} />
 
-          {showModal && clickedCustomerName === order.customer_name && (
+          {/* Show the CustomerInfoModal when the showCustomerModal state is true */}
+          {showCustomerModal && clickedCustomerName === order.customer_name && (
             <CustomerInfoModal
               customerName={clickedCustomerName}
-              onClose={() => setShowModal(false)}
+              shippingAddress={order.shipping_address}
+              billingAddress={order.billing_address}
+              orderedItems={order.order_items.map(item => item.product_name)}
+              total={order.total_price}
+              orderDate={order.order_date}
+              onClose={() => setShowCustomerModal(false)}
             />
           )}
-
         </div>
       ))}
+
+      {/* Show the DeleteSelectModal when the showDeleteModal state is true */}
+      {showDeleteModal && (
+        <DeleteSelectModal
+          confirmDelete={() => {
+            handleDeleteSelected();
+            setShowDeleteModal(false);
+          }}
+          closeModal={() => setShowDeleteModal(false)}
+        />
+      )}
     </div>
   );
 };

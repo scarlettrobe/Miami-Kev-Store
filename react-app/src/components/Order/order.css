@@ -8,15 +8,34 @@
     z-index: 1000;
 }
   
+
+#ordermodalclose{
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-image: linear-gradient(135deg, #ff85a3, #ffa5b5, #ffd3da);
+  color: rgb(16, 1, 41);
+  font-family: "Comic Sans MS", cursive;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#ordermodalclose:hover{
+  background-image: linear-gradient(135deg, #ffd3da, #ffa5b5, #ff85a3);
+}
+
 .modal {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #FFF;
+    background-color: rgb(1, 1, 112);
+
     padding: 50px;
     z-index: 1000;
 }
+
+
+
 
 .order-management {
     display: flex;
