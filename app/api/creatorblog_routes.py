@@ -8,6 +8,7 @@ blog_routes = Blueprint('blog', __name__)
 
 
 @blog_routes.route('/', methods=['GET'])
+@login_required
 def get_all_blog_posts():
     try:
         posts = BlogPost.query.all()
@@ -17,12 +18,15 @@ def get_all_blog_posts():
         return jsonify(error=str(e)), 500
 
 @blog_routes.route('/<int:id>', methods=['GET'])
+@login_required
 def get_blog_post_by_id(id):
     post = BlogPost.query.get(id)
     if post:
         return jsonify(post.to_dict())
     else:
         return jsonify({'error': 'Blog post not found'}), 404
+    
+    
     
 @blog_routes.route('', methods=['POST'])
 @login_required

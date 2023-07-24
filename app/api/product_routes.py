@@ -5,6 +5,7 @@ from app.api.aws import upload_file_to_s3, get_unique_filename, remove_file_from
 from app.models import Product, ProductImage, db
 from app.api.auth_routes import validation_errors_to_error_messages
 from app.models import Product, ProductImage, OrderItem, Order, db
+from flask_login import login_required
 
 
 
@@ -16,6 +17,7 @@ product_routes = Blueprint('products', __name__)
 
 from flask import current_app  # Import current_app
 
+@login_required
 @product_routes.route('', methods=['GET'])
 def get_products():
     try:
@@ -34,8 +36,8 @@ def get_products():
         return {'error': 'An error occurred while fetching products'}, 500
 
 
-
 @product_routes.route('', methods=['POST'])
+@login_required
 def create_product():
     form = ProductForm()
     form['csrf_token'].data = request.cookies['csrf_token']
@@ -67,6 +69,7 @@ def create_product():
 
 
 @product_routes.route('/<int:id>', methods=['GET'])
+@login_required
 def get_product(id):
     product = Product.query.get(id)
     if not product:
@@ -75,6 +78,7 @@ def get_product(id):
 
 
 @product_routes.route('/<int:id>', methods=['PUT'])
+@login_required
 def update_product(id):
     product = Product.query.get(id)
     if not product:
@@ -115,8 +119,8 @@ def update_product(id):
         return {'errors': validation_errors_to_error_messages(form.errors)}, 400
 
 
-
 @product_routes.route('/<int:id>', methods=['DELETE'])
+@login_required
 def delete_product(id):
     product = Product.query.get(id)
     if product is None:
