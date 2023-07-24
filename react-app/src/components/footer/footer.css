@@ -1,0 +1,44 @@
+.footer-container {
+    width: 100%;
+    background-color: #f7e0c1;
+    color: #001e65;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    border-top: 1px solid #d3d3d3;
+    font-family: 'Roboto', sans-serif;
+    height: 125px;
+  }
+  
+  .footer-container a {
+    color: #0e76a8;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  
+  .footer-container a:hover {
+    color: #f0e3e3;
+  }
+  
+  .linkedin-icon {
+    width: 125px;
+    height: 30px;
+    margin-top: 10px;
+  }
+  
+  .connect-text {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  .user-name {
+    font-size: 16px;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  

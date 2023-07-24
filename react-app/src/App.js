@@ -12,6 +12,7 @@ import ProductCreate from './components/Product/ProductCreate';
 import Navigation from "./components/Navigation";
 import Sidebar from "./components/SideNavBar/Sidebar";
 import OrderManagement from "./components/Order/OrderManagement";
+import Footer from '../src/components/footer/footer';
 
 import BlogPosts from './components/blog/BlogPosts';
 
@@ -52,6 +53,7 @@ function App() {
           </Route>
         </Switch>
       )}
+      <Footer />
     </>
   );
 }
