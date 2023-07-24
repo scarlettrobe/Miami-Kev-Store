@@ -163,6 +163,22 @@ export const removeProductFromOrder = (orderId, productId) => async (dispatch) =
   }
 };
 
+export const updateOrderPrice = (orderId, price) => async (dispatch) => {
+  const response = await fetch(`/api/orders/${orderId}/price`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ price }),
+  });
+
+  if (response.ok) {
+    const updatedOrder = await response.json();
+    dispatch(setOrders({ orders: [updatedOrder] }));
+  } else {
+    throw new Error(`Failed to update order price: ${response.status}`);
+  }
+};
 
 
 /* Reducer */
