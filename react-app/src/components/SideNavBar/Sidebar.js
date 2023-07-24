@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleChevronRight, faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import './Sidebar.css';
 
 function Sidebar() {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -18,6 +19,11 @@ function Sidebar() {
       window.location.href = navigateTo;
     }, 200);
   };
+
+  // Don't render the sidebar if we're on the login page
+  if (location.pathname === '/login') {
+    return null;
+  }
 
   return (
     <div id='sidebarid'>
@@ -35,6 +41,7 @@ function Sidebar() {
             <li><Link to="/products" onClick={(e) => closeSidebarAndNavigate(e, "/products")}>View Products</Link></li>
             <li><Link to="/create-product" onClick={(e) => closeSidebarAndNavigate(e, "/create-product")}>Create Product</Link></li>
             <li><Link to="/create-blog-post" onClick={(e) => closeSidebarAndNavigate(e, "/create-blog-post")}>Blog Updates</Link></li>
+            <li><a href="https://www.linkedin.com/in/scarlettrobe/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
           </ul>
         </div>
       )}

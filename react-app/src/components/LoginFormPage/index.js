@@ -47,57 +47,60 @@ function LoginFormPage() {
     history.push("/");
   };
 
-  return (
-    <div className="login-container">
-      <div className="top">
-        <div className="logo-container" onClick={handleLogoClick}>
-          <div className="logo-wrapper">
+   // ... code above remains the same ...
+
+   return (
+    <div className="l-container" id="login-page">
+      <div className="l-top" id="top-section">
+        <div className="l-logo-container" onClick={handleLogoClick} id="logo-section">
+          <div className="l-logo-wrapper" id="logo-wrapper">
           </div>
-          <div className="logo-text"></div>
+          <div className="l-logo-text" id="logo-text"></div>
         </div>
       </div>
-      <h1 className="input-title">Log In</h1>
-      <form onSubmit={handleSubmit} className="form-wrapper">
-        <ul>
+      <h1 className="l-input-title" id="login-title">Log In</h1>
+      <form onSubmit={handleSubmit} className="l-form-wrapper" id="login-form">
+        <ul id="l-error-list">
           {errors.map((error, idx) => (
-            <li key={idx}>{error}</li>
+            <li key={idx} className="l-error-message">{error}</li>
           ))}
         </ul>
-        <div className="form-group">
+        <div className="l-form-group" id="email-group">
           <input
             type="email"
             value={email}
             placeholder="Email"
-            className="inputs"
+            className="l-inputs" id="email-input"
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
-        <div className="form-group">
+        <div className="l-form-group" id="password-group">
           <input
             type="password"
             value={password}
             placeholder="Password"
-            className="inputs"
+            className="l-inputs" id="password-input"
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        <button className="buttons" type="submit">
+        <button className="l-buttons" type="submit" id="login-button">
           Log In
         </button>
       </form>
-      <div className="demo-wrapper">
-        <button className="buttons" onClick={demo}>
+      <div className="l-demo-wrapper" id="demo-button-wrapper">
+        <button className="l-buttons" onClick={demo} id="demo-button">
           Demo User
         </button>
       </div>
-      <div>
-        <span>Don't have an account? </span>
-        <Link to="/signup">Sign Up</Link> 
+      <div id="l-signup-link-container">
+        <span id="signup-text">Don't have an account? </span>
+        <Link to="/signup" id="l-signup-link">Sign Up</Link> 
       </div>
     </div>
   );
+
 }
 
 export default LoginFormPage;

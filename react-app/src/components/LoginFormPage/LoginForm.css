@@ -1,0 +1,94 @@
+
+  
+  #login-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: black;
+  }
+  
+  .l-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .l-logo-container {
+    cursor: pointer;
+  }
+  
+  .l-logo-text {
+    color: white;
+    font-weight: bold;
+    margin-top: 0.5rem;
+  }
+  
+  .l-input-title {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .l-form-wrapper {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .l-error-message {
+    color: red;
+    margin-bottom: 1rem;
+  }
+  
+  .l-inputs {
+    padding: 1rem;
+    width: calc(100% - 2rem); /* Subtracting the padding on both sides */
+    margin-bottom: 1rem;
+    border: 1px solid white;
+    background: white;
+    color: black;
+    border-radius: 4px;
+  }
+  
+  .l-buttons {
+    padding: 1rem;
+    width: 100%;
+    color: white;
+    background: blue;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  #login-button{
+    width: ;
+  }
+  
+  .l-buttons:hover {
+    background: darkblue;
+  }
+  
+  .l-demo-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  
+  #l-signup-link-container {
+    color: white;
+    font-size: 1rem;
+  }
+  
+  #l-signup-link {
+    color: blue;
+    text-decoration: none;
+  }
+  
+  #l-signup-link:hover {
+    text-decoration: underline;
+    color: red;
+  }
+  
