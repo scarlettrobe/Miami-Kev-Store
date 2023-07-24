@@ -8,8 +8,8 @@ function ProductComponent() {
   const [product, setProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editableProduct, setEditableProduct] = useState({ name: '', description: '', price: 0, images: [] });
-  const [fileCount, setFileCount] = useState(0);  
-  
+  const [fileCount, setFileCount] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -71,10 +71,19 @@ function ProductComponent() {
     try {
       await dispatch(removeProduct(product.id));
       console.log('Product deleted successfully');
-      history.push('/products');  
+      history.push('/products');
     } catch (error) {
       console.log('Error deleting product:', error);
     }
+    setShowDeleteModal(false); // Close modal after deletion
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false); // Close modal without deleting
+  }
+
+  const showDeleteConfirmation = () => {
+    setShowDeleteModal(true); // Show delete confirmation modal
   }
 
   return (
@@ -120,15 +129,22 @@ function ProductComponent() {
             {isEditing ? (
               <div className="product-actions">
                 <button className="btn-save" onClick={handleSave}>Save</button>
-                <button className="btn-delete" onClick={handleDelete}>Delete</button>
+                <button className="btn-delete" onClick={showDeleteConfirmation}>Delete</button>
               </div>
             ) : null}
           </div>
         </div>
       )}
+      {showDeleteModal && (
+        <div className="delete-modal">
+          <h2>Confirm Delete</h2>
+          <p>Are you sure you want to delete this product?</p>
+          <button  className="yesdelete" onClick={handleDelete}>Yes, Delete</button>
+          <button className='cancelbuttong' onClick={handleDeleteCancel}>Cancel</button>
+        </div>
+      )}
     </div>
   );
-
 }
 
 export default ProductComponent;
