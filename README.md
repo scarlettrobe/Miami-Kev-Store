@@ -33,7 +33,7 @@ Miami Kev Merch, a social media and e-commerce platform, is a website for social
 (Replace this placeholder with your images)
 
 ## Contact Information
-[LinkedIn Profile](https://www.linkedin.com/in/scarlettrobe/)
+[My Linked in Profile](https://www.linkedin.com/in/scarlettrobe/)
 
 ## API Endpoints
 
@@ -54,4 +54,3 @@ Miami Kev Merch, a social media and e-commerce platform, is a website for social
 | `/products/<int:id>`  | GET, PUT, DELETE | Fetch, update or delete a product by id |
 | `/users`  | GET | Fetch all users |
 | `/users/<int:id>`  | GET | Fetch a user by id |
-
