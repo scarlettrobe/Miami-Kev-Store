@@ -1,40 +1,65 @@
 .signup-form-modal {
-    color: white;
-    background: black;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .signup-form-title {
-    color: red;
-  }
-  
-  .signup-form {
-    border: 1px solid blue;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .signup-form-label {
-    color: white;
-    margin: 5px 0;
-  }
-  
-  .signup-form-input {
-    background: white;
-    color: black;
-    margin: 5px 0;
-  }
-  
-  .signup-form-button {
-    background: red;
-    color: white;
-    margin: 10px 0;
-  }
-  
-  .signup-form-errors {
-    color: red;
-  }
-  
+  background: #1F1F1F;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 10px;
+  width: 500px;
+  max-width: 100%;
+}
+
+.signup-form-title {
+  color: #FF4757;
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.signup-form-label {
+  color: #FFF;
+  font-size: 1.2em;
+  margin-bottom: 5px;
+}
+
+.signup-form-input {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #BDBDBD;
+  border-radius: 5px;
+}
+
+.signup-form-button {
+  padding: 10px;
+  background: #FF4757;
+  color: #FFF;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.signup-form-button:hover {
+  background: #E84141;
+}
+
+.signup-form-errors {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  background: #f7c4bf;
+  color: #FFF;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.signup-form-errors li {
+  margin-bottom: 5px;
+}
