@@ -10,7 +10,7 @@ function ProductCreate() {
     const [product, setProduct] = useState(undefined);
     const [productName, setProductName] = useState("");
     const [productDescription, setProductDescription] = useState("");
-    const [productPrice, setProductPrice] = useState(0);
+    const [productPrice, setProductPrice] = useState("");
     const [productImages, setProductImages] = useState([]);
 
     const [errors, setErrors] = useState([]);
@@ -24,6 +24,14 @@ function ProductCreate() {
         setProduct(product);
     }, [productName, productDescription, productPrice, productImages]);
 
+    const handlePriceChange = (event) => {
+        let value = event.target.value;
+        let pattern = /^\d+(\.\d{0,2})?$/;
+        if (pattern.test(value)) {
+            setProductPrice(value);
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const errors = [];
@@ -36,12 +44,8 @@ function ProductCreate() {
         if (productDescription.length < 10) errors.push("Product description must be at least 10 characters long");
         if (productDescription.length > 500) errors.push("Product description must not exceed 500 characters");
 
-        if (productPrice < 0) errors.push("Price can't be negative");
+        if (productPrice <= 0) errors.push("Price must be greater than zero");
         if (productPrice > 100000) errors.push("Price cannot exceed 100,000");
-        if (isNaN(productPrice) || !/^\d+(\.\d{0,2})?$/.test(productPrice.toString())) {
-            errors.push("Invalid price format. Please enter a valid price.");
-        }
-    
 
         if (productImages.some(file => !checkExtension(file))) errors.push("Images must be of type: pdf, png, jpg, jpeg, or gif");
         if (productImages.length > 5) errors.push("Cannot upload more than 5 images");
@@ -95,10 +99,10 @@ function ProductCreate() {
                     <label htmlFor="price">Price</label>
                     <input
                         name="price"
-                        type="number"
+                        type="text"
                         placeholder="Enter a price"
                         value={productPrice}
-                        onChange={(e) => setProductPrice(parseFloat(e.target.value))}
+                        onChange={handlePriceChange}
                         className="form-control"
                     />
                 </div>
@@ -116,7 +120,6 @@ function ProductCreate() {
             </form>
         </div>
     );
-
 }
 
 export default ProductCreate;

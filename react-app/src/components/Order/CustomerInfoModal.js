@@ -1,9 +1,9 @@
-// CustomerInfoModal.js
 const CustomerInfoModal = ({
   customerName,
   shippingAddress,
   billingAddress,
   orderedItems,
+  quantity,
   total,
   orderDate,
   onClose
@@ -16,7 +16,9 @@ const CustomerInfoModal = ({
         <p>Billing Address: {billingAddress}</p>
         <p>Ordered Items:</p>
         {orderedItems.map((item, index) => (
-          <p key={index}>{item}</p>
+          <p key={index}>
+            {item} - Quantity: {quantity[index]}
+          </p>
         ))}
         <p>Total: {total}</p>
         <p>Order Date: {orderDate}</p>

@@ -106,6 +106,7 @@ const OrderManagement = () => {
               shippingAddress={order.shipping_address}
               billingAddress={order.billing_address}
               orderedItems={order.order_items.map(item => item.product_name)}
+              quantity={order.order_items.map(item => item.quantity)}
               total={order.total_price}
               orderDate={order.order_date}
               onClose={() => setShowCustomerModal(false)}
