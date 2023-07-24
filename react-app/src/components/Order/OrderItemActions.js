@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProductToOrder, removeProductFromOrder, fetchOrders } from '../../store/order';
+import { addProductToOrder, removeProductFromOrder, fetchOrders, updateOrderPrice } from '../../store/order';
 import { getProducts } from '../../store/product';
 import './order.css';
 
@@ -39,7 +39,13 @@ const OrderItemActions = ({ orderId, orderItems }) => {
       try {
         await dispatch(removeProductFromOrder(orderId, productId, product.price));
         dispatch(fetchOrders());
-        // Do not modify event.target.value here
+        // Update the order price
+        const orderPrice = products.reduce((sum, product) => sum + product.price, 0);
+        if (!orderPrice) {
+          dispatch(updateOrderPrice(orderId, 0));
+        } else {
+          dispatch(updateOrderPrice(orderId, Math.max(0, orderPrice - product.price)));
+        }
       } catch (err) {
         console.error(err);
       }
