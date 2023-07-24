@@ -35,12 +35,13 @@ export const addProductToOrderAction = (orderId, productId) => {
   };
 };
 
-export const removeProductFromOrderAction = (orderId, productId) => {
+export const removeProductFromOrderAction = (orderId, productId, price) => {
   return {
     type: REMOVE_PRODUCT_FROM_ORDER,
-    payload: { orderId, productId },
+    payload: { orderId, productId, price },
   };
 };
+
 
 export const deleteOrderAction = (id) => {
   return {
@@ -129,7 +130,7 @@ export const createOrder = (order) => async (dispatch) => {
 };
 
 
-export const addProductToOrder = (orderId, productId) => async (dispatch) => {
+export const addProductToOrder = (orderId, productId, price) => async (dispatch) => {
   const response = await fetch(`/api/orders/${orderId}/products/${productId}`, {
     method: 'POST',
     headers: {
@@ -137,16 +138,17 @@ export const addProductToOrder = (orderId, productId) => async (dispatch) => {
     },
     body: JSON.stringify({
       quantity: 1,
+      price,
     }), // assuming quantity of 1 for new items
   });
 
   if (response.ok) {
     const updatedOrder = await response.json();
-    dispatch(setOrders(updatedOrder));
+    dispatch(setOrders({ orders: [updatedOrder] }));
   } else {
     throw new Error(`Failed to add product: ${response.status}`);
   }
-};
+};  
 
 export const removeProductFromOrder = (orderId, productId) => async (dispatch) => {
   const response = await fetch(`/api/orders/${orderId}/products/${productId}`, {
@@ -155,11 +157,13 @@ export const removeProductFromOrder = (orderId, productId) => async (dispatch) =
 
   if (response.ok) {
     const updatedOrder = await response.json();
-    dispatch(setOrders(updatedOrder));
+    dispatch(setOrders({ orders: [updatedOrder] }));
   } else {
     throw new Error(`Failed to remove product: ${response.status}`);
   }
 };
+
+
 
 /* Reducer */
 export default function reducer(state = {}, action) {
@@ -199,12 +203,17 @@ export default function reducer(state = {}, action) {
     }
 
     case REMOVE_PRODUCT_FROM_ORDER: {
-      const { orderId, productId } = action.payload;
+      const { orderId, productId, price } = action.payload;
       if (state[orderId]) {
+        // Calculate the quantity of this product in the order
+        const productInOrder = state[orderId].order_items.find(item => item.product_id === productId);
+        const quantity = productInOrder ? productInOrder.quantity : 0;
+    
         return {
           ...state,
           [orderId]: {
             ...state[orderId],
+            total_price: state[orderId].total_price - price * quantity, // Update the total price
             order_items: state[orderId].order_items.filter(item => item.product_id !== productId),
           },
         };

@@ -15,22 +15,39 @@ const OrderItemActions = ({ orderId, orderItems }) => {
 
   const handleAddProduct = async (orderId, event) => {
     try {
-      const productId = event.target.value;
-      await dispatch(addProductToOrder(orderId, productId, 1));
-      dispatch(fetchOrders());
-      event.target.value = ''; // Reset the dropdown value to an empty string
+      const productId = parseInt(event.target.value, 10); // Parse the productId as an integer
+      console.log('Selected product ID:', productId);
+      console.log('All products:', products);
+      const product = products.find(product => product.id === productId);
+  
+      if (product) {
+        await dispatch(addProductToOrder(orderId, productId, product.price));
+        dispatch(fetchOrders());
+        event.target.value = ''; // Set the value of the select element to an empty string
+      } else {
+        console.error(`Product with id ${productId} not found`);
+      }
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleRemoveProduct = async (orderId, event) => {
-    const productId = event.target.value;
-    await dispatch(removeProductFromOrder(orderId, productId));
-    dispatch(fetchOrders());
-    event.target.value = ''; 
-    };
-
+    const productId = parseInt(event.target.value, 10); // Parse the productId as an integer
+    const product = products.find(product => product.id === productId);
+    if (product) {
+      try {
+        await dispatch(removeProductFromOrder(orderId, productId, product.price));
+        dispatch(fetchOrders());
+        // Do not modify event.target.value here
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.error(`Product with id ${productId} not found`);
+    }
+  };
+  
 
   return (
     <div>

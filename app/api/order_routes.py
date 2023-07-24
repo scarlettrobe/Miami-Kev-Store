@@ -123,9 +123,7 @@ def delete_order_items(orderId):
         return jsonify({'error': 'Failed to delete order items'}), 500
 
 
-
 @order_routes.route('/<int:orderId>/products/<int:productId>', methods=['POST'])
-@login_required
 def add_product_to_order(orderId, productId):
     data = request.get_json()  # get the request data
 
@@ -153,6 +151,14 @@ def add_product_to_order(orderId, productId):
             )
             db.session.add(order_item)
 
+        # Update the total price of the order
+        order.total_price = 0  # Reset the total price to 0
+
+        # Calculate the total price based on all items in the order
+        for item in order.order_items:
+            item_product = Product.query.get(item.product_id)
+            order.total_price += item_product.price * item.quantity
+
         db.session.commit()
 
         return order.to_dict()  # return the updated order
@@ -161,15 +167,20 @@ def add_product_to_order(orderId, productId):
 
 
 
-
 @order_routes.route('/<int:orderId>/products/<int:productId>', methods=['DELETE'])
-@login_required
 def remove_product_from_order(orderId, productId):
     order = Order.query.get(orderId)
+    product = Product.query.get(productId)  # get the product that is being removed
     order_item = OrderItem.query.filter_by(order_id=orderId, product_id=productId).first()
-    if order and order_item:
+    
+    if order and order_item and product:
+        # Decrease the total price of the order
+        order.total_price -= product.price * order_item.quantity
+
+        # Remove the order_item from the order
         db.session.delete(order_item)
         db.session.commit()
+
         return order.to_dict() 
     else:
-        return jsonify(order.to_dict()), 200
+        return jsonify({"errors": ["Order, product or order item not found"]}), 400
