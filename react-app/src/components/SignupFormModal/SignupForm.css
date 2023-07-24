@@ -1,0 +1,40 @@
+.signup-form-modal {
+    color: white;
+    background: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .signup-form-title {
+    color: red;
+  }
+  
+  .signup-form {
+    border: 1px solid blue;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .signup-form-label {
+    color: white;
+    margin: 5px 0;
+  }
+  
+  .signup-form-input {
+    background: white;
+    color: black;
+    margin: 5px 0;
+  }
+  
+  .signup-form-button {
+    background: red;
+    color: white;
+    margin: 10px 0;
+  }
+  
+  .signup-form-errors {
+    color: red;
+  }
+  

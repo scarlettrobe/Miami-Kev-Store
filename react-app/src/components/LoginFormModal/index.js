@@ -36,7 +36,7 @@ function LoginFormModal() {
   };
 
   const demo = async () => {
-    const data = await dispatch(login('demo@lit.com', 'demopass'))
+    const data = await dispatch(login('demo@aa.io', 'password'))
     if (data) {
       setErrors(data);
     }
