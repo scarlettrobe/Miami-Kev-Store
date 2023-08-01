@@ -161,7 +161,9 @@ export const removeProductFromOrder = (orderId, productId) => async (dispatch) =
   } else {
     throw new Error(`Failed to remove product: ${response.status}`);
   }
-};
+}
+
+
 
 export const updateOrderPrice = (orderId, price) => async (dispatch) => {
   const response = await fetch(`/api/orders/${orderId}/price`, {
@@ -192,7 +194,6 @@ export default function reducer(state = {}, action) {
       return ordersObject;
 
     case UPDATE_ORDER_STATUS:
-
       if (state[action.payload.id]) {
         return {
           ...state,
@@ -221,31 +222,34 @@ export default function reducer(state = {}, action) {
     case REMOVE_PRODUCT_FROM_ORDER: {
       const { orderId, productId, price } = action.payload;
       if (state[orderId]) {
-        // Calculate the quantity of this product in the order
-        const productInOrder = state[orderId].order_items.find(item => item.product_id === productId);
-        const quantity = productInOrder ? productInOrder.quantity : 0;
-    
+        // Filter out the product from the order_items array
+        const newOrderItems = state[orderId].order_items.filter(item => item.product_id !== productId);
+        
+        // Update the total_price
+        const total_price = Math.max(0, state[orderId].total_price - price);
+        
         return {
           ...state,
           [orderId]: {
             ...state[orderId],
-            total_price: state[orderId].total_price - price * quantity, // Update the total price
-            order_items: state[orderId].order_items.filter(item => item.product_id !== productId),
+            order_items: newOrderItems,
+            total_price
           },
         };
       }
       return state;
     }
 
-    case DELETE_ORDER: {
+    case MAKE_ORDER:
+      return {
+        ...state,
+        [action.payload.id]: action.payload
+      };
+
+    case DELETE_ORDER:
       const newState = { ...state };
       delete newState[action.payload];
       return newState;
-    }
-
-    case MAKE_ORDER: {
-      return { ...state, [action.payload.id]: action.payload };
-    }
 
     default:
       return state;
